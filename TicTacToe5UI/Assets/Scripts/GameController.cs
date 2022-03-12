@@ -5,6 +5,15 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
+    public GameObject startPointForHorizontalLine;
+    public GameObject startPointForVerticalLine;
+    public GameObject startPointForGridSpaces;
+    public GameObject GridLineHorizontalPrefub;
+    public GameObject GridLineVerticalPrefub;
+    public GameObject GridLinesContainer;
+    public GameObject GridSpacesContainer;
+    public GameObject GridSpacePrefub;
+
     public Text[] textsList;
 
     public GridSpace[] gridSpaces;
@@ -23,7 +32,49 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
-        SetGameControllerReferenceOnButtons();
+        MakeHorizontalGridLines();
+        MakeGridSpaces();
+        //SetGameControllerReferenceOnButtons();
+    }
+
+    void MakeHorizontalGridLines()
+    {
+        var posXStart = startPointForHorizontalLine.transform.position.x + 82;
+        var posX = posXStart;
+        var posY = startPointForHorizontalLine.transform.position.y;
+
+
+        var posYMinus = 58;
+        for (int Y = 0; Y < 9; Y++)
+        {
+            var obj = GameObject.Instantiate(GridLineHorizontalPrefub);
+            obj.transform.parent = GridLinesContainer.transform;
+            obj.transform.position = new Vector3(posX, posY, 0f);
+            posY -= posYMinus;
+        }
+    }
+
+    void MakeGridSpaces()
+    {
+        var posXStart = startPointForGridSpaces.transform.position.x;
+        var posX = posXStart;
+        var posY = startPointForGridSpaces.transform.position.y;
+
+
+        var posYMinus = 58;
+        for (int Y = 0; Y < 10; Y++)
+        {
+            for (int X = 0; X < 10; X++)
+            {
+                var obj = GameObject.Instantiate(GridSpacePrefub);
+                obj.transform.parent = GridSpacesContainer.transform;
+                obj.transform.position = new Vector3(posX, posY, 0f);
+                obj.transform.localScale = new Vector3(0.5f, 0.5f);
+                posX += 58;
+            }
+            posY -= posYMinus;
+            posX = posXStart;
+        }
     }
 
     void ChangePlayerSide()
