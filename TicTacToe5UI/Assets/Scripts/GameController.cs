@@ -32,9 +32,27 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
+        MakeVerticalGridLines();
         MakeHorizontalGridLines();
         MakeGridSpaces();
         //SetGameControllerReferenceOnButtons();
+    }
+
+    void MakeVerticalGridLines()
+    {
+        var posXStart = startPointForVerticalLine.transform.position.x;
+        var posX = posXStart;
+        var posY = startPointForVerticalLine.transform.position.y - 82;
+
+
+        var posXPlus = 58;
+        for (int X = 0; X < 9; X++)
+        {
+            var obj = GameObject.Instantiate(GridLineVerticalPrefub);
+            obj.transform.parent = GridLinesContainer.transform;
+            obj.transform.position = new Vector3(posX, posY, 0f);
+            posX += posXPlus;
+        }
     }
 
     void MakeHorizontalGridLines()
