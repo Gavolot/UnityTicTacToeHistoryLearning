@@ -79,15 +79,32 @@ public class GameController : MonoBehaviour
         var posY = startPointForGridSpaces.transform.position.y;
 
 
+        var sizeY = 10;
+        var sizeX = 10;
+
+        int I = 0;
+
+        buttonsList = new Button[sizeY * sizeX];
+        textsList = new Text[sizeY * sizeX];
+
         var posYMinus = 58;
-        for (int Y = 0; Y < 10; Y++)
+        for (int Y = 0; Y < sizeY; Y++)
         {
-            for (int X = 0; X < 10; X++)
+            for (int X = 0; X < sizeX; X++)
             {
                 var obj = GameObject.Instantiate(GridSpacePrefub);
                 obj.transform.parent = GridSpacesContainer.transform;
                 obj.transform.position = new Vector3(posX, posY, 0f);
                 obj.transform.localScale = new Vector3(0.5f, 0.5f);
+
+                buttonsList[I] = obj.GetComponent<Button>();
+                textsList[I] = obj.GetComponentInChildren<Text>();
+
+                obj.GetComponent<GridSpace>().SetGameController(this);
+
+                buttonsList[I].interactable = false;
+
+                I++;
                 posX += 58;
             }
             posY -= posYMinus;
@@ -199,125 +216,9 @@ public class GameController : MonoBehaviour
         bool xWin = false;
         bool oWin = false;
 
-        if(textsList[0].text == playerSide && textsList[1].text == playerSide && textsList[2].text == playerSide)
-        {
-            if(playerSide == "X")
-            {
-                xWin = true;
-            }
-            else if(playerSide == "O")
-            {
-                oWin = true;
-            }
-            textsList[0].color = Color.green;
-            textsList[1].color = Color.green;
-            textsList[2].color = Color.green;
-        }
-        else
-        if (textsList[0].text == playerSide && textsList[3].text == playerSide && textsList[6].text == playerSide)
-        {
-            if (playerSide == "X")
-            {
-                xWin = true;
-            }
-            else if (playerSide == "O")
-            {
-                oWin = true;
-            }
-            textsList[0].color = Color.green;
-            textsList[3].color = Color.green;
-            textsList[6].color = Color.green;
-        }
-        else
-        if (textsList[1].text == playerSide && textsList[4].text == playerSide && textsList[7].text == playerSide)
-        {
-            if (playerSide == "X")
-            {
-                xWin = true;
-            }
-            else if (playerSide == "O")
-            {
-                oWin = true;
-            }
-            textsList[1].color = Color.green;
-            textsList[4].color = Color.green;
-            textsList[7].color = Color.green;
-        }
-        else
-        if (textsList[3].text == playerSide && textsList[4].text == playerSide && textsList[5].text == playerSide)
-        {
-            if (playerSide == "X")
-            {
-                xWin = true;
-            }
-            else if (playerSide == "O")
-            {
-                oWin = true;
-            }
-            textsList[3].color = Color.green;
-            textsList[4].color = Color.green;
-            textsList[5].color = Color.green;
-        }
-        else
-        if (textsList[6].text == playerSide && textsList[7].text == playerSide && textsList[8].text == playerSide)
-        {
-            if (playerSide == "X")
-            {
-                xWin = true;
-            }
-            else if (playerSide == "O")
-            {
-                oWin = true;
-            }
-            textsList[6].color = Color.green;
-            textsList[7].color = Color.green;
-            textsList[8].color = Color.green;
-        }
-        else
-        if (textsList[2].text == playerSide && textsList[5].text == playerSide && textsList[8].text == playerSide)
-        {
-            if (playerSide == "X")
-            {
-                xWin = true;
-            }
-            else if (playerSide == "O")
-            {
-                oWin = true;
-            }
-            textsList[2].color = Color.green;
-            textsList[5].color = Color.green;
-            textsList[8].color = Color.green;
-        }
-        else
-        if (textsList[0].text == playerSide && textsList[4].text == playerSide && textsList[8].text == playerSide)
-        {
-            if (playerSide == "X")
-            {
-                xWin = true;
-            }
-            else if (playerSide == "O")
-            {
-                oWin = true;
-            }
-            textsList[0].color = Color.green;
-            textsList[4].color = Color.green;
-            textsList[8].color = Color.green;
-        }
-        else
-        if (textsList[2].text == playerSide && textsList[4].text == playerSide && textsList[6].text == playerSide)
-        {
-            if (playerSide == "X")
-            {
-                xWin = true;
-            }
-            else if (playerSide == "O")
-            {
-                oWin = true;
-            }
-            textsList[2].color = Color.green;
-            textsList[4].color = Color.green;
-            textsList[6].color = Color.green;
-        }
+        //Check 5 line win
+
+        //
         //===
         if (xWin)
         {
