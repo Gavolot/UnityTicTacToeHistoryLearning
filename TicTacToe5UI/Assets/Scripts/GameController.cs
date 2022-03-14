@@ -16,7 +16,7 @@ public class GameController : MonoBehaviour
 
     public Text[] textsList;
 
-    public GridSpace[] gridSpaces;
+    public GridSpace[,] gridSpaces;
     private Button[] buttonsList;
 
     public string playerSide = "X";
@@ -87,6 +87,8 @@ public class GameController : MonoBehaviour
         buttonsList = new Button[sizeY * sizeX];
         textsList = new Text[sizeY * sizeX];
 
+        gridSpaces = new GridSpace[sizeY, sizeX];
+
         var posYMinus = 58;
         for (int Y = 0; Y < sizeY; Y++)
         {
@@ -100,12 +102,16 @@ public class GameController : MonoBehaviour
                 buttonsList[I] = obj.GetComponent<Button>();
                 textsList[I] = obj.GetComponentInChildren<Text>();
 
-                obj.GetComponent<GridSpace>().SetGameController(this);
+                //==
+                gridSpaces[Y, X] = obj.GetComponent<GridSpace>();
+                gridSpaces[Y, X].SetGameController(this);
+                //==
 
                 buttonsList[I].interactable = false;
-
                 I++;
                 posX += 58;
+
+                
             }
             posY -= posYMinus;
             posX = posXStart;
@@ -132,14 +138,14 @@ public class GameController : MonoBehaviour
     void SetGameControllerReferenceOnButtons()
     {
         buttonsList = new Button[textsList.Length];
-        gridSpaces = new GridSpace[textsList.Length];
+        //gridSpaces = new GridSpace[textsList.Length];
         for(var i = 0; i < textsList.Length; i++)
         {
             var obj = textsList[i];
 
             var scr = obj.GetComponentInParent<GridSpace>();
             scr.SetGameController(this);
-            gridSpaces[i] = scr;
+            //gridSpaces[i] = scr;
 
             var but = obj.GetComponentInParent<Button>();
             buttonsList[i] = but;
