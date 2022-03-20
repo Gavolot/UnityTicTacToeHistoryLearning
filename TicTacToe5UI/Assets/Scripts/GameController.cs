@@ -38,6 +38,7 @@ public class GameController : MonoBehaviour
 
     public List<GridSpace> gridSpacesPlayer1InGame;
     public List<GridSpace> gridSpacesPlayer2InGame;
+    public int allGridSpaces = 0;
 
     private void Awake()
     {
@@ -63,7 +64,8 @@ public class GameController : MonoBehaviour
         for (int X = 0; X < 9; X++)
         {
             var obj = GameObject.Instantiate(GridLineVerticalPrefub);
-            obj.transform.parent = GridLinesContainer.transform;
+            //obj.transform.parent = GridLinesContainer.transform;
+            obj.transform.SetParent(GridLinesContainer.transform);
             obj.transform.position = new Vector3(posX, posY, 0f);
             posX += posXPlus;
         }
@@ -80,7 +82,7 @@ public class GameController : MonoBehaviour
         for (int Y = 0; Y < 9; Y++)
         {
             var obj = GameObject.Instantiate(GridLineHorizontalPrefub);
-            obj.transform.parent = GridLinesContainer.transform;
+            obj.transform.SetParent(GridLinesContainer.transform);
             obj.transform.position = new Vector3(posX, posY, 0f);
             posY -= posYMinus;
         }
@@ -108,8 +110,9 @@ public class GameController : MonoBehaviour
         {
             for (int X = 0; X < sizeX; X++)
             {
+                allGridSpaces++;
                 var obj = GameObject.Instantiate(GridSpacePrefub);
-                obj.transform.parent = GridSpacesContainer.transform;
+                obj.transform.SetParent(GridSpacesContainer.transform);
                 obj.transform.position = new Vector3(posX, posY, 0f);
                 obj.transform.localScale = new Vector3(0.5f, 0.5f);
 
@@ -310,6 +313,9 @@ public class GameController : MonoBehaviour
         SetPlayer2Button.interactable = true;
         SetPlayer1Text.color = Color.black;
         SetPlayer2Text.color = Color.black;
+
+        gridSpacesPlayer1InGame.Clear();
+        gridSpacesPlayer2InGame.Clear();
     }
 
     public void EndTurn()
@@ -318,7 +324,7 @@ public class GameController : MonoBehaviour
         bool oWin = false;
 
         //Check 5 line win
-
+        
         //
         //===
         if (xWin)
@@ -337,7 +343,12 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            bool ok = true;
+            bool ok = false;
+            if(gridSpacesPlayer1InGame.Count + gridSpacesPlayer2InGame.Count == allGridSpaces)
+            {
+                ok = true;
+            }
+            /*
             for (var i = 0; i < textsList.Length; i++)
             {
                 var obj = textsList[i];
@@ -347,8 +358,10 @@ public class GameController : MonoBehaviour
                     break;
                 }
             }
+            */
             if (ok)
             {
+                GameOver();
                 GameOverText.text = "Draw";
                 GameOverPanel.SetActive(true);
             }

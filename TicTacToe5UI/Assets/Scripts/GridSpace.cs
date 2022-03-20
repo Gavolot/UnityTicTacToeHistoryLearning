@@ -25,9 +25,10 @@ public class GridSpace : MonoBehaviour
         button.interactable = false;
         buttonText.text = gameController.GetPlayerSide();
         buttonText.color = gameController.GetPlayerColor();
-        gameController.EndTurn();
 
-        if(buttonText.text == "X")
+
+
+        if (buttonText.text == "X")
         {
             gameController.gridSpacesPlayer1InGame.Add(this);
         }
@@ -35,6 +36,9 @@ public class GridSpace : MonoBehaviour
         {
             gameController.gridSpacesPlayer2InGame.Add(this);
         }
+        gameController.EndTurn();
+
+
 
 
     }
