@@ -21,6 +21,11 @@ public class GameController : MonoBehaviour
 
     public string playerSide = "X";
 
+    public string aiSide = "";
+
+    private string Player1Side = "X";
+    private string Player2Side = "O";
+
 
     public GameObject GameOverPanel;
     public Text GameOverText;
@@ -30,8 +35,13 @@ public class GameController : MonoBehaviour
     public Text SetXText;
     public Text SetOText;
 
+    public List<GridSpace> gridSpacesPlayer1InGame;
+    public List<GridSpace> gridSpacesPlayer2InGame;
+
     private void Awake()
     {
+        gridSpacesPlayer1InGame = new List<GridSpace>();
+        gridSpacesPlayer2InGame = new List<GridSpace>();
         MakeVerticalGridLines();
         MakeHorizontalGridLines();
         MakeGridSpaces();
@@ -111,10 +121,89 @@ public class GameController : MonoBehaviour
                 I++;
                 posX += 58;
 
-                
+
             }
             posY -= posYMinus;
             posX = posXStart;
+        }
+
+        for (int Y = 0; Y < sizeY; Y++)
+        {
+            for (int X = 0; X < sizeX; X++)
+            {
+                var obj = gridSpaces[Y, X];
+                try
+                {
+                    obj.upNeighbour = gridSpaces[Y - 1, X].buttonText;
+                }
+                catch
+                {
+                    //
+                }
+                //==
+                try
+                {
+                    obj.downNeighbour = gridSpaces[Y + 1, X].buttonText;
+                }
+                catch
+                {
+                    //
+                }
+                //==
+                try
+                {
+                    obj.leftNeighbour = gridSpaces[Y, X - 1].buttonText;
+                }
+                catch
+                {
+                    //
+                }
+                //==
+                try
+                {
+                    obj.rightNeighbour = gridSpaces[Y, X + 1].buttonText;
+                }
+                catch
+                {
+                    //
+                }
+                //==
+                try
+                {
+                    obj.upLeftNeighbour = gridSpaces[Y - 1, X - 1].buttonText;
+                }
+                catch
+                {
+                    //
+                }
+                //==
+                try
+                {
+                    obj.upRightNeighbour = gridSpaces[Y - 1, X + 1].buttonText;
+                }
+                catch
+                {
+                    //
+                }
+                //==
+                try
+                {
+                    obj.downLeftNeighbour = gridSpaces[Y + 1, X - 1].buttonText;
+                }
+                catch
+                {
+                    //
+                }
+                //==
+                try
+                {
+                    obj.downRightNeighbour = gridSpaces[Y + 1, X + 1].buttonText;
+                }
+                catch
+                {
+                    //
+                }
+            }
         }
     }
 
@@ -160,7 +249,7 @@ public class GameController : MonoBehaviour
 
     public void SetXPlayerSide()
     {
-        playerSide = "X";
+        playerSide = Player1Side;
         SetXButton.interactable = false;
         SetOButton.interactable = false;
         for (var i = 0; i < textsList.Length; i++)
@@ -169,11 +258,12 @@ public class GameController : MonoBehaviour
             buttonsList[i].interactable = true;
         }
         SetXText.color = Color.red;
+        aiSide = Player2Side;
     }
 
     public void SetOPlayerSide()
     {
-        playerSide = "O";
+        playerSide = Player2Side;
         SetXButton.interactable = false;
         SetOButton.interactable = false;
         for (var i = 0; i < textsList.Length; i++)
@@ -182,6 +272,7 @@ public class GameController : MonoBehaviour
             buttonsList[i].interactable = true;
         }
         SetOText.color = Color.blue;
+        aiSide = Player1Side;
     }
 
     public string GetPlayerSide()
@@ -191,7 +282,7 @@ public class GameController : MonoBehaviour
 
     public Color GetPlayerColor()
     {
-        return (playerSide == "X") ? Color.red : Color.blue;
+        return (playerSide == Player1Side) ? Color.red : Color.blue;
     }
 
     void GameOver()
@@ -228,11 +319,11 @@ public class GameController : MonoBehaviour
         //===
         if (xWin)
         {
-            GameOverText.text = "X Win!";
+            GameOverText.text = Player1Side + " Win!";
         }
         else if (oWin)
         {
-            GameOverText.text = "O Win!";
+            GameOverText.text = Player2Side + " Win!";
         }
         //===
         if (xWin || oWin)

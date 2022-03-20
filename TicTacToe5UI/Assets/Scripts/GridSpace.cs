@@ -10,12 +10,33 @@ public class GridSpace : MonoBehaviour
 
     private GameController gameController;
 
+
+    public Text upNeighbour;
+    public Text downNeighbour;
+    public Text leftNeighbour;
+    public Text rightNeighbour;
+    public Text upLeftNeighbour;
+    public Text upRightNeighbour;
+    public Text downLeftNeighbour;
+    public Text downRightNeighbour;
+
     public void SetSpace()
     {
         button.interactable = false;
         buttonText.text = gameController.GetPlayerSide();
         buttonText.color = gameController.GetPlayerColor();
         gameController.EndTurn();
+
+        if(buttonText.text == "X")
+        {
+            gameController.gridSpacesPlayer1InGame.Add(this);
+        }
+        if (buttonText.text == "O")
+        {
+            gameController.gridSpacesPlayer2InGame.Add(this);
+        }
+
+
     }
 
     public void SetGameController(GameController controller)
