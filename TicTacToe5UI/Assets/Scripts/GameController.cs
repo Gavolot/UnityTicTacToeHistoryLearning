@@ -24,8 +24,8 @@ public class GameController : MonoBehaviour
     public bool with_ai = false;
     public string aiSide = "";
 
-    private string Player1Side = "X";
-    private string Player2Side = "O";
+    public string Player1Side = "X";
+    public string Player2Side = "O";
 
 
     public GameObject GameOverPanel;
@@ -39,6 +39,9 @@ public class GameController : MonoBehaviour
     public List<GridSpace> gridSpacesPlayer1InGame;
     public List<GridSpace> gridSpacesPlayer2InGame;
     public int allGridSpaces = 0;
+
+
+    private const int _winCount = 5;
 
     private void Awake()
     {
@@ -141,7 +144,7 @@ public class GameController : MonoBehaviour
                 var obj = gridSpaces[Y, X];
                 try
                 {
-                    obj.upNeighbour = gridSpaces[Y - 1, X].buttonText;
+                    obj.upNeighbour = gridSpaces[Y - 1, X];
                 }
                 catch
                 {
@@ -150,7 +153,7 @@ public class GameController : MonoBehaviour
                 //==
                 try
                 {
-                    obj.downNeighbour = gridSpaces[Y + 1, X].buttonText;
+                    obj.downNeighbour = gridSpaces[Y + 1, X];
                 }
                 catch
                 {
@@ -159,7 +162,7 @@ public class GameController : MonoBehaviour
                 //==
                 try
                 {
-                    obj.leftNeighbour = gridSpaces[Y, X - 1].buttonText;
+                    obj.leftNeighbour = gridSpaces[Y, X - 1];
                 }
                 catch
                 {
@@ -168,7 +171,7 @@ public class GameController : MonoBehaviour
                 //==
                 try
                 {
-                    obj.rightNeighbour = gridSpaces[Y, X + 1].buttonText;
+                    obj.rightNeighbour = gridSpaces[Y, X + 1];
                 }
                 catch
                 {
@@ -177,7 +180,7 @@ public class GameController : MonoBehaviour
                 //==
                 try
                 {
-                    obj.upLeftNeighbour = gridSpaces[Y - 1, X - 1].buttonText;
+                    obj.upLeftNeighbour = gridSpaces[Y - 1, X - 1];
                 }
                 catch
                 {
@@ -186,7 +189,7 @@ public class GameController : MonoBehaviour
                 //==
                 try
                 {
-                    obj.upRightNeighbour = gridSpaces[Y - 1, X + 1].buttonText;
+                    obj.upRightNeighbour = gridSpaces[Y - 1, X + 1];
                 }
                 catch
                 {
@@ -195,7 +198,7 @@ public class GameController : MonoBehaviour
                 //==
                 try
                 {
-                    obj.downLeftNeighbour = gridSpaces[Y + 1, X - 1].buttonText;
+                    obj.downLeftNeighbour = gridSpaces[Y + 1, X - 1];
                 }
                 catch
                 {
@@ -204,7 +207,7 @@ public class GameController : MonoBehaviour
                 //==
                 try
                 {
-                    obj.downRightNeighbour = gridSpaces[Y + 1, X + 1].buttonText;
+                    obj.downRightNeighbour = gridSpaces[Y + 1, X + 1];
                 }
                 catch
                 {
@@ -259,13 +262,17 @@ public class GameController : MonoBehaviour
         playerSide = Player1Side;
         SetPlayer1Button.interactable = false;
         SetPlayer2Button.interactable = false;
-        for (var i = 0; i < textsList.Length; i++)
-        {
-            var obj = textsList[i];
-            buttonsList[i].interactable = true;
-        }
+        SetInteractibleAllButtons(true);
         SetPlayer1Text.color = Color.red;
         aiSide = Player2Side;
+    }
+
+    public void SetInteractibleAllButtons(bool interact)
+    {
+        for (var i = 0; i < buttonsList.Length; i++)
+        {
+            buttonsList[i].interactable = interact;
+        }
     }
 
     public void SetOPlayerSide()
@@ -273,11 +280,7 @@ public class GameController : MonoBehaviour
         playerSide = Player2Side;
         SetPlayer1Button.interactable = false;
         SetPlayer2Button.interactable = false;
-        for (var i = 0; i < textsList.Length; i++)
-        {
-            var obj = textsList[i];
-            buttonsList[i].interactable = true;
-        }
+        SetInteractibleAllButtons(true);
         SetPlayer2Text.color = Color.blue;
         aiSide = Player1Side;
     }
@@ -290,15 +293,6 @@ public class GameController : MonoBehaviour
     public Color GetPlayerColor()
     {
         return (playerSide == Player1Side) ? Color.red : Color.blue;
-    }
-
-    void GameOver()
-    {
-        for (var i = 0; i < textsList.Length; i++)
-        {
-            var obj = textsList[i];
-            buttonsList[i].interactable = false;
-        }
     }
 
     public void RestartGame()
@@ -318,58 +312,129 @@ public class GameController : MonoBehaviour
         gridSpacesPlayer2InGame.Clear();
     }
 
+    public void AI_Turn()
+    {
+        //gameController.SetInteractibleAllButtons(true);
+    }
+
+
     public void EndTurn()
     {
-        bool xWin = false;
-        bool oWin = false;
+        bool player1Win = false;
+        bool player2Win = false;
+        bool isGameOver = false;
 
-        //Check 5 line win
         
-        //
-        //===
-        if (xWin)
+        if (!with_ai)
         {
+            ChangePlayerSide();
+        }
+        //Check 5 line win
+        /*
+        if (!player1Win)
+        {
+            player1Win = CheckRightLineWin(gridSpacesPlayer1InGame, Player1Side);
+        }
+        if (!player1Win)
+        {
+            player1Win = CheckLeftLineWin(gridSpacesPlayer1InGame, Player1Side);
+        }
+
+        if (!player1Win)
+        {
+            if (!player2Win)
+            {
+                player2Win = CheckRightLineWin(gridSpacesPlayer2InGame, Player2Side);
+            }
+            if (!player2Win)
+            {
+                player2Win = CheckLeftLineWin(gridSpacesPlayer2InGame, Player2Side);
+            }
+        }
+        */
+        player1Win = CheckHorizontalLineWin(gridSpacesPlayer1InGame, Player1Side);
+        player2Win = CheckHorizontalLineWin(gridSpacesPlayer2InGame, Player2Side);
+
+        //===
+        if (player1Win)
+        {
+            Debug.Log("1 WIN!");
             GameOverText.text = Player1Side + " Win!";
         }
-        else if (oWin)
+        else if (player2Win)
         {
             GameOverText.text = Player2Side + " Win!";
         }
         //===
-        if (xWin || oWin)
+        if (player1Win || player2Win)
         {
-            GameOver();
-            GameOverPanel.SetActive(true);
+            isGameOver = true;
         }
         else
         {
+            //Check Draw win condition
             bool ok = false;
             if(gridSpacesPlayer1InGame.Count + gridSpacesPlayer2InGame.Count == allGridSpaces)
             {
                 ok = true;
             }
-            /*
-            for (var i = 0; i < textsList.Length; i++)
-            {
-                var obj = textsList[i];
-                if(obj.text == "")
-                {
-                    ok = false;
-                    break;
-                }
-            }
-            */
             if (ok)
             {
-                GameOver();
+                isGameOver = true;
                 GameOverText.text = "Draw";
-                GameOverPanel.SetActive(true);
             }
         }
         //===
-        if (!with_ai)
+
+
+        if (isGameOver)
         {
-            ChangePlayerSide();
+            SetInteractibleAllButtons(false);
+            GameOverPanel.SetActive(true);
         }
     }
+
+    #region CheckLines
+    public bool CheckHorizontalLineWin(List<GridSpace> playerSpacesList, string PLAYER_SIDE)
+    {
+        int __I = 0;
+        foreach (var obj in playerSpacesList)
+        {
+            if (obj.buttonText.text == PLAYER_SIDE)
+            {
+                __I++;
+                var target = obj.rightNeighbour;
+                if (target != null)
+                {
+                    for (var i = 0; i < _winCount; i++)
+                    {
+                        if (target != null)
+                        {
+                            if (target.buttonText.text == PLAYER_SIDE)
+                            {
+                                __I++;
+                                if (__I == _winCount)
+                                {
+                                    return true;
+                                }
+                                target = target.rightNeighbour;
+                            }
+                            else
+                            {
+                                __I = 0;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    __I = 0;
+                }
+            }
+        }
+
+        return false;
+    }
+    #endregion
 }
