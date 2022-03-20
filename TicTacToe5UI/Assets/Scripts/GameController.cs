@@ -19,8 +19,9 @@ public class GameController : MonoBehaviour
     public GridSpace[,] gridSpaces;
     private Button[] buttonsList;
 
-    public string playerSide = "X";
+    public string playerSide = "";
 
+    public bool with_ai = false;
     public string aiSide = "";
 
     private string Player1Side = "X";
@@ -353,6 +354,9 @@ public class GameController : MonoBehaviour
             }
         }
         //===
-        ChangePlayerSide();
+        if (!with_ai)
+        {
+            ChangePlayerSide();
+        }
     }
 }

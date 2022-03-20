@@ -954,8 +954,8 @@ MonoBehaviour:
   Panel: {fileID: 1852176573}
   SetPlayer1Button: {fileID: 1530141996}
   SetPlayer2Button: {fileID: 88592299}
-  SetXText: {fileID: 1442666255}
-  SetOText: {fileID: 1957571002}
+  SetPlayer1Text: {fileID: 1442666255}
+  SetPlayer2Text: {fileID: 1957571002}
   gridSpacesPlayer1InGame: []
   gridSpacesPlayer2InGame: []
 --- !u!1 &1064442211
