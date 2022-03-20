@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 88592300}
   - component: {fileID: 88592299}
   m_Layer: 5
-  m_Name: SetO
+  m_Name: SetPlayer2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -947,15 +947,17 @@ MonoBehaviour:
   GridSpacesContainer: {fileID: 489302194}
   GridSpacePrefub: {fileID: 8630747531962304228, guid: 90a801827c7f4c74d86193f9363c0918, type: 3}
   textsList: []
-  gridSpaces: []
   playerSide: X
+  aiSide: 
   GameOverPanel: {fileID: 1136838175}
   GameOverText: {fileID: 503833734}
   Panel: {fileID: 1852176573}
-  SetXButton: {fileID: 1530141996}
-  SetOButton: {fileID: 88592299}
+  SetPlayer1Button: {fileID: 1530141996}
+  SetPlayer2Button: {fileID: 88592299}
   SetXText: {fileID: 1442666255}
   SetOText: {fileID: 1957571002}
+  gridSpacesPlayer1InGame: []
+  gridSpacesPlayer2InGame: []
 --- !u!1 &1064442211
 GameObject:
   m_ObjectHideFlags: 0
@@ -1258,7 +1260,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: X
+  m_Text: 1
 --- !u!222 &1442666256
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1280,7 +1282,7 @@ GameObject:
   - component: {fileID: 1530141997}
   - component: {fileID: 1530141996}
   m_Layer: 5
-  m_Name: SetX
+  m_Name: SetPlayer1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1579,7 +1581,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: O
+  m_Text: 2
 --- !u!222 &1957571003
 CanvasRenderer:
   m_ObjectHideFlags: 0

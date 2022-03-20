@@ -30,8 +30,8 @@ public class GameController : MonoBehaviour
     public GameObject GameOverPanel;
     public Text GameOverText;
     public GameObject Panel;
-    public Button SetXButton;
-    public Button SetOButton;
+    public Button SetPlayer1Button;
+    public Button SetPlayer2Button;
     public Text SetXText;
     public Text SetOText;
 
@@ -40,6 +40,9 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
+        SetPlayer1Button.GetComponentInChildren<Text>().text = Player1Side;
+        SetPlayer2Button.GetComponentInChildren<Text>().text = Player2Side;
+
         gridSpacesPlayer1InGame = new List<GridSpace>();
         gridSpacesPlayer2InGame = new List<GridSpace>();
         MakeVerticalGridLines();
@@ -209,15 +212,15 @@ public class GameController : MonoBehaviour
 
     void ChangePlayerSide()
     {
-        playerSide = (playerSide == "X") ? "O" : "X";
+        playerSide = (playerSide == Player1Side) ? Player2Side : Player1Side;
 
-        if (playerSide == "X")
+        if (playerSide == Player1Side)
         {
             SetXText.color = Color.red;
             SetOText.color = Color.black;
         }
         else
-        if (playerSide == "O")
+        if (playerSide == Player2Side)
         {
             SetXText.color = Color.black;
             SetOText.color = Color.blue;
@@ -250,8 +253,8 @@ public class GameController : MonoBehaviour
     public void SetXPlayerSide()
     {
         playerSide = Player1Side;
-        SetXButton.interactable = false;
-        SetOButton.interactable = false;
+        SetPlayer1Button.interactable = false;
+        SetPlayer2Button.interactable = false;
         for (var i = 0; i < textsList.Length; i++)
         {
             var obj = textsList[i];
@@ -264,8 +267,8 @@ public class GameController : MonoBehaviour
     public void SetOPlayerSide()
     {
         playerSide = Player2Side;
-        SetXButton.interactable = false;
-        SetOButton.interactable = false;
+        SetPlayer1Button.interactable = false;
+        SetPlayer2Button.interactable = false;
         for (var i = 0; i < textsList.Length; i++)
         {
             var obj = textsList[i];
@@ -302,8 +305,8 @@ public class GameController : MonoBehaviour
             obj.text = "";
         }
         GameOverPanel.SetActive(false);
-        SetXButton.interactable = true;
-        SetOButton.interactable = true;
+        SetPlayer1Button.interactable = true;
+        SetPlayer2Button.interactable = true;
         SetXText.color = Color.black;
         SetOText.color = Color.black;
     }
