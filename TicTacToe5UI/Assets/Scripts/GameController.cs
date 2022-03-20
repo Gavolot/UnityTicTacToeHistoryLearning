@@ -32,16 +32,16 @@ public class GameController : MonoBehaviour
     public GameObject Panel;
     public Button SetPlayer1Button;
     public Button SetPlayer2Button;
-    public Text SetXText;
-    public Text SetOText;
+    public Text SetPlayer1Text;
+    public Text SetPlayer2Text;
 
     public List<GridSpace> gridSpacesPlayer1InGame;
     public List<GridSpace> gridSpacesPlayer2InGame;
 
     private void Awake()
     {
-        SetPlayer1Button.GetComponentInChildren<Text>().text = Player1Side;
-        SetPlayer2Button.GetComponentInChildren<Text>().text = Player2Side;
+        SetPlayer1Text.text = Player1Side;
+        SetPlayer2Text.text = Player2Side;
 
         gridSpacesPlayer1InGame = new List<GridSpace>();
         gridSpacesPlayer2InGame = new List<GridSpace>();
@@ -216,14 +216,14 @@ public class GameController : MonoBehaviour
 
         if (playerSide == Player1Side)
         {
-            SetXText.color = Color.red;
-            SetOText.color = Color.black;
+            SetPlayer1Text.color = Color.red;
+            SetPlayer2Text.color = Color.black;
         }
         else
         if (playerSide == Player2Side)
         {
-            SetXText.color = Color.black;
-            SetOText.color = Color.blue;
+            SetPlayer1Text.color = Color.black;
+            SetPlayer2Text.color = Color.blue;
         }
     }
 
@@ -244,8 +244,8 @@ public class GameController : MonoBehaviour
             but.interactable = false;
         }
 
-        SetOText.color = Color.black;
-        SetXText.color = Color.black;
+        SetPlayer2Text.color = Color.black;
+        SetPlayer1Text.color = Color.black;
 
         GameOverPanel.SetActive(false);
     }
@@ -260,7 +260,7 @@ public class GameController : MonoBehaviour
             var obj = textsList[i];
             buttonsList[i].interactable = true;
         }
-        SetXText.color = Color.red;
+        SetPlayer1Text.color = Color.red;
         aiSide = Player2Side;
     }
 
@@ -274,7 +274,7 @@ public class GameController : MonoBehaviour
             var obj = textsList[i];
             buttonsList[i].interactable = true;
         }
-        SetOText.color = Color.blue;
+        SetPlayer2Text.color = Color.blue;
         aiSide = Player1Side;
     }
 
@@ -307,8 +307,8 @@ public class GameController : MonoBehaviour
         GameOverPanel.SetActive(false);
         SetPlayer1Button.interactable = true;
         SetPlayer2Button.interactable = true;
-        SetXText.color = Color.black;
-        SetOText.color = Color.black;
+        SetPlayer1Text.color = Color.black;
+        SetPlayer2Text.color = Color.black;
     }
 
     public void EndTurn()
