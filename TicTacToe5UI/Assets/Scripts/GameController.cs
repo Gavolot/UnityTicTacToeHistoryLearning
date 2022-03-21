@@ -367,7 +367,7 @@ public class GameController : MonoBehaviour
             for (int i = 0; i < (int)LineCheck.Size; i++)
             {
                 LineCheck check = (LineCheck)i;
-                player2Win = CheckLinesWin(gridSpacesPlayer1InGame, Player2Side, check);
+                player2Win = CheckLinesWin(gridSpacesPlayer2InGame, Player2Side, check);
                 if (player2Win) break;
             }
         }
