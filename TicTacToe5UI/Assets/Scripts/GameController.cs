@@ -352,8 +352,26 @@ public class GameController : MonoBehaviour
             }
         }
         */
-        player1Win = CheckHorizontalLineWin(gridSpacesPlayer1InGame, Player1Side);
-        player2Win = CheckHorizontalLineWin(gridSpacesPlayer2InGame, Player2Side);
+
+
+        for (int i = 0; i < (int)LineCheck.Size; i++)
+        {
+            LineCheck check = (LineCheck)i;
+            player1Win = CheckLinesWin(gridSpacesPlayer1InGame, Player1Side, check);
+            if (player1Win) break;
+        }
+
+
+        if (!player1Win)
+        {
+            for (int i = 0; i < (int)LineCheck.Size; i++)
+            {
+                LineCheck check = (LineCheck)i;
+                player2Win = CheckLinesWin(gridSpacesPlayer1InGame, Player2Side, check);
+                if (player2Win) break;
+            }
+        }
+        
 
         //===
         if (player1Win)
@@ -394,16 +412,54 @@ public class GameController : MonoBehaviour
         }
     }
 
-    #region CheckLines
-    public bool CheckHorizontalLineWin(List<GridSpace> playerSpacesList, string PLAYER_SIDE)
+    public enum LineCheck
     {
+        Horizontal,
+        Vertical,
+        DiagonalUp,
+        DiagonalDown,
+        Size
+    }
+
+
+    private GridSpace GetNeighbour(GridSpace obj, LineCheck line)
+    {
+        GridSpace TT = null;
+        if (line == LineCheck.Horizontal)
+        {
+            TT = obj.rightNeighbour;
+        }
+        else
+        if (line == LineCheck.Vertical)
+        {
+            TT = obj.upNeighbour;
+        }
+        else
+        if (line == LineCheck.DiagonalDown)
+        {
+            TT = obj.downLeftNeighbour;
+        }
+        else
+        if (line == LineCheck.DiagonalUp)
+        {
+            TT = obj.downRightNeighbour;
+        }
+        return TT;
+    }
+
+    #region CheckLines
+    public bool CheckLinesWin(List<GridSpace> playerSpacesList, string PLAYER_SIDE, LineCheck line)
+    {
+        GridSpace TT = null;
         int __I = 0;
         foreach (var obj in playerSpacesList)
         {
             if (obj.buttonText.text == PLAYER_SIDE)
             {
                 __I++;
-                var target = obj.rightNeighbour;
+                TT = GetNeighbour(obj, line);
+                var target = TT;
+
                 if (target != null)
                 {
                     for (var i = 0; i < _winCount; i++)
@@ -417,7 +473,8 @@ public class GameController : MonoBehaviour
                                 {
                                     return true;
                                 }
-                                target = target.rightNeighbour;
+                                TT = GetNeighbour(target, line);
+                                target = TT;
                             }
                             else
                             {
@@ -433,7 +490,6 @@ public class GameController : MonoBehaviour
                 }
             }
         }
-
         return false;
     }
     #endregion
