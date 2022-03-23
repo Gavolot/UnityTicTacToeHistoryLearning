@@ -2,9 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class GameController : MonoBehaviour
 {
+
     public GameObject startPointForHorizontalLine;
     public GameObject startPointForVerticalLine;
     public GameObject startPointForGridSpaces;
@@ -39,6 +41,11 @@ public class GameController : MonoBehaviour
     public List<GridSpace> gridSpacesPlayer1InGame;
     public List<GridSpace> gridSpacesPlayer2InGame;
     public int allGridSpaces = 0;
+
+    public int steps = 0;
+
+    public int boardSizeY = 10;
+    public int boardSizeX = 10;
 
 
     private const int _winCount = 5;
@@ -98,8 +105,8 @@ public class GameController : MonoBehaviour
         var posY = startPointForGridSpaces.transform.position.y;
 
 
-        var sizeY = 10;
-        var sizeX = 10;
+        var sizeY = boardSizeY;
+        var sizeX = boardSizeX;
 
         int I = 0;
 
@@ -312,10 +319,47 @@ public class GameController : MonoBehaviour
         gridSpacesPlayer2InGame.Clear();
     }
 
+    #region AI_Logic
+    List<GridSpace> lineHorizontalCheck = new List<GridSpace>();
     public void AI_Turn()
     {
+        lineHorizontalCheck.Clear();
         //gameController.SetInteractibleAllButtons(true);
+        string targetPlayerSideAnalis = "";
+        List<GridSpace> targetPlayerSideListSpacesAnalis = null;
+        if (aiSide == Player1Side)
+        {
+            targetPlayerSideAnalis = Player2Side;
+            targetPlayerSideListSpacesAnalis = gridSpacesPlayer2InGame;
+        }
+        else if (aiSide == Player2Side)
+        {
+            targetPlayerSideAnalis = Player1Side;
+            targetPlayerSideListSpacesAnalis = gridSpacesPlayer1InGame;
+        }
+
+        bool ok = false;
+        //»зыски первого хода »», он может выбрать сходить в случайно позиции на доске
+        //либо сходить в случайной позиции возле игрока
+        if(steps <= 1)
+        {
+            var rnd = Random.Range(1, 100);
+            if(rnd <= 50)
+            {
+
+            }
+            else
+            {
+                ok = CheckLine(
+                targetPlayerSideListSpacesAnalis,
+                targetPlayerSideAnalis,
+                LineCheck.Horizontal,
+                1,
+                lineHorizontalCheck);
+            }
+        }
     }
+    #endregion
 
 
     public void EndTurn()
@@ -330,34 +374,10 @@ public class GameController : MonoBehaviour
             ChangePlayerSide();
         }
         //Check 5 line win
-        /*
-        if (!player1Win)
-        {
-            player1Win = CheckRightLineWin(gridSpacesPlayer1InGame, Player1Side);
-        }
-        if (!player1Win)
-        {
-            player1Win = CheckLeftLineWin(gridSpacesPlayer1InGame, Player1Side);
-        }
-
-        if (!player1Win)
-        {
-            if (!player2Win)
-            {
-                player2Win = CheckRightLineWin(gridSpacesPlayer2InGame, Player2Side);
-            }
-            if (!player2Win)
-            {
-                player2Win = CheckLeftLineWin(gridSpacesPlayer2InGame, Player2Side);
-            }
-        }
-        */
-
-
         for (int i = 0; i < (int)LineCheck.Size; i++)
         {
             LineCheck check = (LineCheck)i;
-            player1Win = CheckLinesWin(gridSpacesPlayer1InGame, Player1Side, check);
+            player1Win = CheckLine(gridSpacesPlayer1InGame, Player1Side, check, _winCount);
             if (player1Win) break;
         }
 
@@ -367,7 +387,7 @@ public class GameController : MonoBehaviour
             for (int i = 0; i < (int)LineCheck.Size; i++)
             {
                 LineCheck check = (LineCheck)i;
-                player2Win = CheckLinesWin(gridSpacesPlayer2InGame, Player2Side, check);
+                player2Win = CheckLine(gridSpacesPlayer2InGame, Player2Side, check, _winCount);
                 if (player2Win) break;
             }
         }
@@ -404,6 +424,7 @@ public class GameController : MonoBehaviour
         }
         //===
 
+        steps++;
 
         if (isGameOver)
         {
@@ -448,7 +469,7 @@ public class GameController : MonoBehaviour
     }
 
     #region CheckLines
-    public bool CheckLinesWin(List<GridSpace> playerSpacesList, string PLAYER_SIDE, LineCheck line)
+    public bool CheckLine(List<GridSpace> playerSpacesList, string PLAYER_SIDE, LineCheck line, int count, List<GridSpace> returnList = null)
     {
         GridSpace TT = null;
         int __I = 0;
@@ -462,14 +483,20 @@ public class GameController : MonoBehaviour
 
                 if (target != null)
                 {
-                    for (var i = 0; i < _winCount; i++)
+                    for (var i = 0; i < count; i++)
                     {
                         if (target != null)
                         {
                             if (target.buttonText.text == PLAYER_SIDE)
                             {
+                                //--
+                                if (returnList != null)
+                                {
+                                    returnList.Add(target);
+                                }
+                                //--
                                 __I++;
-                                if (__I == _winCount)
+                                if (__I == count)
                                 {
                                     return true;
                                 }

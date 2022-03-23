@@ -20,15 +20,15 @@ public class GridSpace : MonoBehaviour
     public GridSpace downLeftNeighbour;
     public GridSpace downRightNeighbour;
 
-    
-
-    public void SetSpace()
+    public void ClickButton(string Side, Color afterPressedColor)
     {
         button.interactable = false;
-        buttonText.text = gameController.GetPlayerSide();
-        buttonText.color = gameController.GetPlayerColor();
+        buttonText.text = Side;
+        buttonText.color = afterPressedColor;
 
-
+        //--
+        //--
+        //--
 
         if (buttonText.text == gameController.Player1Side)
         {
@@ -38,9 +38,14 @@ public class GridSpace : MonoBehaviour
         {
             gameController.gridSpacesPlayer2InGame.Add(this);
         }
+    }
 
-        
-
+    public void SetSpace()
+    {
+        ClickButton(gameController.GetPlayerSide(), gameController.GetPlayerColor());
+        //--
+        //--
+        //--
 
         if (gameController.with_ai)
         {
