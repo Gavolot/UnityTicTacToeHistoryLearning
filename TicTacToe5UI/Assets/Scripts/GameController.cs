@@ -302,6 +302,11 @@ public class GameController : MonoBehaviour
         return (playerSide == Player1Side) ? Color.red : Color.blue;
     }
 
+    public Color GetAIColor()
+    {
+        return (aiSide == Player1Side) ? Color.red : Color.blue;
+    }
+
     public void RestartGame()
     {
         for (var i = 0; i < textsList.Length; i++)
@@ -344,19 +349,56 @@ public class GameController : MonoBehaviour
         if(steps <= 1)
         {
             var rnd = Random.Range(1, 100);
-            if(rnd <= 50)
-            {
+            //if(rnd <= 50)
+            //{
 
-            }
-            else
-            {
+            //}
+            //else
+            //{
                 ok = CheckLine(
                 targetPlayerSideListSpacesAnalis,
                 targetPlayerSideAnalis,
                 LineCheck.Horizontal,
                 1,
                 lineHorizontalCheck);
+
+            GridSpace left = null;
+            GridSpace right = null;
+            GridSpace up = null;
+            GridSpace down = null;
+
+            GridSpace downLeft = null;
+            GridSpace upLeft = null;
+            GridSpace downRight = null;
+            GridSpace upRight = null;
+
+
+            left = lineHorizontalCheck[0].leftNeighbour;
+            right = lineHorizontalCheck[lineHorizontalCheck.Count - 1].rightNeighbour;
+
+            if(left != null && right != null)
+            {
+                if(rnd < 50)
+                {
+                    left.ClickButton(aiSide, GetAIColor());
+                }
+                else
+                {
+                    right.ClickButton(aiSide, GetAIColor());
+                }
             }
+            
+            /*
+            for(int i = 0; i < lineHorizontalCheck.Count; i++)
+            {
+                var obj = lineHorizontalCheck[i];
+                if(obj.leftNeighbour != null)
+                {
+
+                }
+            }
+            */
+            //}
         }
     }
     #endregion
@@ -478,6 +520,10 @@ public class GameController : MonoBehaviour
             if (obj.buttonText.text == PLAYER_SIDE)
             {
                 __I++;
+                if (returnList != null)
+                {
+                    returnList.Add(obj);
+                }
                 TT = GetNeighbour(obj, line);
                 var target = TT;
 

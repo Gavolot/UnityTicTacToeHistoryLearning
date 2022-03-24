@@ -948,7 +948,10 @@ MonoBehaviour:
   GridSpacePrefub: {fileID: 8630747531962304228, guid: 90a801827c7f4c74d86193f9363c0918, type: 3}
   textsList: []
   playerSide: X
+  with_ai: 1
   aiSide: 
+  Player1Side: X
+  Player2Side: O
   GameOverPanel: {fileID: 1136838175}
   GameOverText: {fileID: 503833734}
   Panel: {fileID: 1852176573}
@@ -958,6 +961,10 @@ MonoBehaviour:
   SetPlayer2Text: {fileID: 1957571002}
   gridSpacesPlayer1InGame: []
   gridSpacesPlayer2InGame: []
+  allGridSpaces: 0
+  steps: 0
+  boardSizeY: 10
+  boardSizeX: 10
 --- !u!1 &1064442211
 GameObject:
   m_ObjectHideFlags: 0

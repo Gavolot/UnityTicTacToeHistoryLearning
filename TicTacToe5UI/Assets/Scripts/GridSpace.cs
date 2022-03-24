@@ -11,14 +11,14 @@ public class GridSpace : MonoBehaviour
     private GameController gameController;
 
 
-    public GridSpace upNeighbour;
-    public GridSpace downNeighbour;
-    public GridSpace leftNeighbour;
-    public GridSpace rightNeighbour;
-    public GridSpace upLeftNeighbour;
-    public GridSpace upRightNeighbour;
-    public GridSpace downLeftNeighbour;
-    public GridSpace downRightNeighbour;
+    public GridSpace upNeighbour = null;
+    public GridSpace downNeighbour = null;
+    public GridSpace leftNeighbour = null;
+    public GridSpace rightNeighbour = null;
+    public GridSpace upLeftNeighbour = null;
+    public GridSpace upRightNeighbour = null;
+    public GridSpace downLeftNeighbour = null;
+    public GridSpace downRightNeighbour = null;
 
     public void ClickButton(string Side, Color afterPressedColor)
     {
@@ -40,6 +40,11 @@ public class GridSpace : MonoBehaviour
         }
     }
 
+    public bool IsEmpty()
+    {
+        return buttonText.text == "" ? true : false;
+    }
+
     public void SetSpace()
     {
         ClickButton(gameController.GetPlayerSide(), gameController.GetPlayerColor());
@@ -49,11 +54,11 @@ public class GridSpace : MonoBehaviour
 
         if (gameController.with_ai)
         {
-            if(gameController.playerSide == buttonText.text)
-            {
+            //if(gameController.playerSide == buttonText.text)
+            //{
                 gameController.AI_Turn();
                 gameController.SetInteractibleAllButtons(false);
-            }
+            //}
         }
         gameController.EndTurn();
     }
