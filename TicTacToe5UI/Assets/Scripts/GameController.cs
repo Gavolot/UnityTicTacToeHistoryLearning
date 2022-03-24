@@ -331,7 +331,6 @@ public class GameController : MonoBehaviour
 
         gridSpacesPlayer1InGame.Clear();
         gridSpacesPlayer2InGame.Clear();
-        allGridSpacesList.Clear();
     }
 
     #region AI_Logic
@@ -350,7 +349,10 @@ public class GameController : MonoBehaviour
             var obj = buttons[i];
             if (obj != null)
             {
-                list.Add(obj);
+                if (obj.IsEmpty())
+                {
+                    list.Add(obj);
+                }
             }
         }
     }
@@ -358,8 +360,9 @@ public class GameController : MonoBehaviour
     private GridSpace ChooseTarget(List<GridSpace> list)
     {
         GridSpace res = null;
-        var rnd = UnityEngine.Mathf.FloorToInt(Random.Range(0, list.Count));
+        int rnd = Random.Range(0, list.Count - 1);
 
+        Debug.Log(rnd);
         res = list[rnd];
 
         return res;
@@ -371,7 +374,7 @@ public class GameController : MonoBehaviour
         while (!isClicked)
         {
             var obj = ChooseTarget(allGridSpacesList);
-            if (obj.IsEmpty())
+            if (obj.buttonText.text == "")
             {
                 isClicked = true;
                 AI_Click_And_End(obj);
@@ -382,6 +385,7 @@ public class GameController : MonoBehaviour
     }
     public void AI_Turn()
     {
+
         SetInteractibleAllNoEmptyButtons(false);
         lineHorizontalCheck.Clear();
         allTargets.Clear();
@@ -404,24 +408,25 @@ public class GameController : MonoBehaviour
         bool okAI = false;
         //»зыски первого хода »», он может выбрать сходить в случайно позиции на доске
         //либо сходить в случайной позиции возле игрока
-        if(steps == 0)
+
+
+        if (steps >= 0)
         {
-            //AI_ChooseTargetOnBoardAndClick();
-            
             var rnd = Random.Range(1, 100);
-            if(rnd <= 50)
+            //if(rnd <= 50)
             {
                 AI_ChooseTargetOnBoardAndClick();
             }
-            else
+            /*else
             {
+                
                 okPlayer = CheckLine(
                 targetPlayerSideListSpacesAnalis,
                 targetPlayerSideAnalis,
                 LineCheck.Horizontal,
                 1,
                 lineHorizontalCheck);
-
+                
                 if (okPlayer)
                 {
                     GridSpace left = null;
@@ -445,17 +450,32 @@ public class GameController : MonoBehaviour
                     downRight = lineHorizontalCheck[0].downRightNeighbour;
                     upRight = lineHorizontalCheck[0].upRightNeighbour;
                     TryAddTarget(allTargets, left, right, up, down, downLeft, upLeft, downRight, upRight);
-                    AI_Click_And_End(ChooseTarget(allTargets));
+                    if (allTargets.Count > 0)
+                    {
+                        AI_Click_And_End(ChooseTarget(allTargets));
+                    }
+                    else
+                    {
+                        AI_ChooseTargetOnBoardAndClick();
+                    }
                 }
-            }
+            } */
             
         }
     }
     #endregion
 
-
+    List<GridSpace> winList = new List<GridSpace>();
     public void EndTurn()
     {
+        
+        if (with_ai)
+        {
+            //if(gameController.playerSide == buttonText.text)
+            //{
+            AI_Turn();
+            //}
+        }
         bool player1Win = false;
         bool player2Win = false;
         bool isGameOver = false;
@@ -466,21 +486,50 @@ public class GameController : MonoBehaviour
             ChangePlayerSide();
         }
         //Check 5 line win
+        winList.Clear();
         for (int i = 0; i < (int)LineCheck.Size; i++)
         {
+            winList.Clear();
             LineCheck check = (LineCheck)i;
-            player1Win = CheckLine(gridSpacesPlayer1InGame, Player1Side, check, _winCount);
-            if (player1Win) break;
+            CheckLine(gridSpacesPlayer1InGame, Player1Side, check, _winCount, winList);
+
+            if(winList.Count == _winCount)
+            {
+                player1Win = true;
+            }
+            if (player1Win)
+            {
+                for(int t = 0; t < winList.Count; t++)
+                {
+                    var obj = winList[t];
+                    obj.SetColor(Color.green);
+                }
+                break;
+            }
         }
 
 
         if (!player1Win)
         {
+            winList.Clear();
             for (int i = 0; i < (int)LineCheck.Size; i++)
             {
+                winList.Clear();
                 LineCheck check = (LineCheck)i;
-                player2Win = CheckLine(gridSpacesPlayer2InGame, Player2Side, check, _winCount);
-                if (player2Win) break;
+                CheckLine(gridSpacesPlayer2InGame, Player2Side, check, _winCount, winList);
+                if (winList.Count == _winCount)
+                {
+                    player2Win = true;
+                }
+                if (player2Win)
+                {
+                    for (int t = 0; t < winList.Count; t++)
+                    {
+                        var obj = winList[t];
+                        obj.SetColor(Color.green);
+                    }
+                    break;
+                }
             }
         }
         
@@ -567,23 +616,26 @@ public class GameController : MonoBehaviour
         int __I = 0;
         foreach (var obj in playerSpacesList)
         {
+            returnList.Clear();
+            __I = 0;
             if (obj.buttonText.text == PLAYER_SIDE)
             {
                 __I++;
-                if (returnList != null)
-                {
-                    returnList.Add(obj);
-                    if(count <= 1)
+
+                    if (returnList != null)
                     {
-                        return true;
+                        returnList.Add(obj);
+                        if(count == 1)
+                            return true;
                     }
-                }
+                
+            
                 TT = GetNeighbour(obj, line);
                 var target = TT;
 
-                if (target != null)
+                if (target != null && count > 1)
                 {
-                    for (var i = 0; i < count; i++)
+                    for (var i = 0; i < count - 1; i++)
                     {
                         if (target != null)
                         {
@@ -605,6 +657,7 @@ public class GameController : MonoBehaviour
                             }
                             else
                             {
+                                returnList.Clear();
                                 __I = 0;
                                 break;
                             }
@@ -613,6 +666,7 @@ public class GameController : MonoBehaviour
                 }
                 else
                 {
+                    returnList.Clear();
                     __I = 0;
                 }
             }

@@ -40,6 +40,11 @@ public class GridSpace : MonoBehaviour
         }
     }
 
+    public void SetColor(Color color)
+    {
+        buttonText.color = color;
+    }
+
     public bool IsEmpty()
     {
         return (buttonText.text != gameController.Player1Side || buttonText.text != gameController.Player2Side)
@@ -53,13 +58,7 @@ public class GridSpace : MonoBehaviour
         //--
         //--
 
-        if (gameController.with_ai)
-        {
-            //if(gameController.playerSide == buttonText.text)
-            //{
-                gameController.AI_Turn();
-            //}
-        }
+
         gameController.EndTurn();
     }
 

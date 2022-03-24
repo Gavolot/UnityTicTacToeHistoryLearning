@@ -947,6 +947,7 @@ MonoBehaviour:
   GridSpacesContainer: {fileID: 489302194}
   GridSpacePrefub: {fileID: 8630747531962304228, guid: 90a801827c7f4c74d86193f9363c0918, type: 3}
   textsList: []
+  allGridSpacesList: []
   playerSide: X
   with_ai: 1
   aiSide: 
@@ -1156,7 +1157,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.000061035156, y: -36.100403}
+  m_AnchoredPosition: {x: 602, y: -36.100403}
   m_SizeDelta: {x: 440, y: 172.2011}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1136838177
