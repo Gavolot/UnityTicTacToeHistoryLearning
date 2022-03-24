@@ -42,7 +42,8 @@ public class GridSpace : MonoBehaviour
 
     public bool IsEmpty()
     {
-        return buttonText.text == "" ? true : false;
+        return (buttonText.text != gameController.Player1Side || buttonText.text != gameController.Player2Side)
+            ? true : false;
     }
 
     public void SetSpace()
@@ -57,7 +58,6 @@ public class GridSpace : MonoBehaviour
             //if(gameController.playerSide == buttonText.text)
             //{
                 gameController.AI_Turn();
-                gameController.SetInteractibleAllButtons(false);
             //}
         }
         gameController.EndTurn();

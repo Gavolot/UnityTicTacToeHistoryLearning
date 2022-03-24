@@ -19,6 +19,7 @@ public class GameController : MonoBehaviour
     public Text[] textsList;
 
     public GridSpace[,] gridSpaces;
+    public List<GridSpace> allGridSpacesList;
     private Button[] buttonsList;
 
     public string playerSide = "";
@@ -52,6 +53,7 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
+        Random.seed = System.Environment.TickCount;
         SetPlayer1Text.text = Player1Side;
         SetPlayer2Text.text = Player2Side;
 
@@ -100,6 +102,7 @@ public class GameController : MonoBehaviour
 
     void MakeGridSpaces()
     {
+        allGridSpacesList = new List<GridSpace>();
         var posXStart = startPointForGridSpaces.transform.position.x;
         var posX = posXStart;
         var posY = startPointForGridSpaces.transform.position.y;
@@ -120,6 +123,7 @@ public class GameController : MonoBehaviour
         {
             for (int X = 0; X < sizeX; X++)
             {
+                
                 allGridSpaces++;
                 var obj = GameObject.Instantiate(GridSpacePrefub);
                 obj.transform.SetParent(GridSpacesContainer.transform);
@@ -130,6 +134,7 @@ public class GameController : MonoBehaviour
                 textsList[I] = obj.GetComponentInChildren<Text>();
 
                 //==
+                allGridSpacesList.Add(obj.GetComponent<GridSpace>());
                 gridSpaces[Y, X] = obj.GetComponent<GridSpace>();
                 gridSpaces[Y, X].SetGameController(this);
                 //==
@@ -269,16 +274,19 @@ public class GameController : MonoBehaviour
         playerSide = Player1Side;
         SetPlayer1Button.interactable = false;
         SetPlayer2Button.interactable = false;
-        SetInteractibleAllButtons(true);
+        SetInteractibleAllNoEmptyButtons(true);
         SetPlayer1Text.color = Color.red;
         aiSide = Player2Side;
     }
 
-    public void SetInteractibleAllButtons(bool interact)
+    public void SetInteractibleAllNoEmptyButtons(bool interact)
     {
-        for (var i = 0; i < buttonsList.Length; i++)
-        {
-            buttonsList[i].interactable = interact;
+        for (var i = 0; i < buttonsList.Length; i++) {
+
+            if (textsList[i].text == "")
+            {
+                buttonsList[i].interactable = interact;
+            }
         }
     }
 
@@ -287,7 +295,7 @@ public class GameController : MonoBehaviour
         playerSide = Player2Side;
         SetPlayer1Button.interactable = false;
         SetPlayer2Button.interactable = false;
-        SetInteractibleAllButtons(true);
+        SetInteractibleAllNoEmptyButtons(true);
         SetPlayer2Text.color = Color.blue;
         aiSide = Player1Side;
     }
@@ -309,6 +317,7 @@ public class GameController : MonoBehaviour
 
     public void RestartGame()
     {
+        
         for (var i = 0; i < textsList.Length; i++)
         {
             var obj = textsList[i];
@@ -322,16 +331,64 @@ public class GameController : MonoBehaviour
 
         gridSpacesPlayer1InGame.Clear();
         gridSpacesPlayer2InGame.Clear();
+        allGridSpacesList.Clear();
     }
 
     #region AI_Logic
     List<GridSpace> lineHorizontalCheck = new List<GridSpace>();
+    List<GridSpace> allTargets = new List<GridSpace>();
+
+    private void AI_Click_And_End(GridSpace button)
+    {
+        button.ClickButton(aiSide, GetAIColor());
+        SetInteractibleAllNoEmptyButtons(true);
+    }
+
+    private void TryAddTarget(List<GridSpace> list, params GridSpace[] buttons)
+    {
+        for(int i = 0; i < buttons.Length; i++) {
+            var obj = buttons[i];
+            if (obj != null)
+            {
+                list.Add(obj);
+            }
+        }
+    }
+
+    private GridSpace ChooseTarget(List<GridSpace> list)
+    {
+        GridSpace res = null;
+        var rnd = UnityEngine.Mathf.FloorToInt(Random.Range(0, list.Count));
+
+        res = list[rnd];
+
+        return res;
+    }
+
+    private bool AI_ChooseTargetOnBoardAndClick()
+    {
+        bool isClicked = false;
+        while (!isClicked)
+        {
+            var obj = ChooseTarget(allGridSpacesList);
+            if (obj.IsEmpty())
+            {
+                isClicked = true;
+                AI_Click_And_End(obj);
+                return isClicked;
+            }
+        }
+        return isClicked;
+    }
     public void AI_Turn()
     {
+        SetInteractibleAllNoEmptyButtons(false);
         lineHorizontalCheck.Clear();
-        //gameController.SetInteractibleAllButtons(true);
+        allTargets.Clear();
         string targetPlayerSideAnalis = "";
         List<GridSpace> targetPlayerSideListSpacesAnalis = null;
+
+        
         if (aiSide == Player1Side)
         {
             targetPlayerSideAnalis = Player2Side;
@@ -343,62 +400,55 @@ public class GameController : MonoBehaviour
             targetPlayerSideListSpacesAnalis = gridSpacesPlayer1InGame;
         }
 
-        bool ok = false;
+        bool okPlayer = false;
+        bool okAI = false;
         //»зыски первого хода »», он может выбрать сходить в случайно позиции на доске
         //либо сходить в случайной позиции возле игрока
-        if(steps <= 1)
+        if(steps == 0)
         {
+            //AI_ChooseTargetOnBoardAndClick();
+            
             var rnd = Random.Range(1, 100);
-            //if(rnd <= 50)
-            //{
-
-            //}
-            //else
-            //{
-                ok = CheckLine(
+            if(rnd <= 50)
+            {
+                AI_ChooseTargetOnBoardAndClick();
+            }
+            else
+            {
+                okPlayer = CheckLine(
                 targetPlayerSideListSpacesAnalis,
                 targetPlayerSideAnalis,
                 LineCheck.Horizontal,
                 1,
                 lineHorizontalCheck);
 
-            GridSpace left = null;
-            GridSpace right = null;
-            GridSpace up = null;
-            GridSpace down = null;
-
-            GridSpace downLeft = null;
-            GridSpace upLeft = null;
-            GridSpace downRight = null;
-            GridSpace upRight = null;
-
-
-            left = lineHorizontalCheck[0].leftNeighbour;
-            right = lineHorizontalCheck[lineHorizontalCheck.Count - 1].rightNeighbour;
-
-            if(left != null && right != null)
-            {
-                if(rnd < 50)
+                if (okPlayer)
                 {
-                    left.ClickButton(aiSide, GetAIColor());
-                }
-                else
-                {
-                    right.ClickButton(aiSide, GetAIColor());
+                    GridSpace left = null;
+                    GridSpace right = null;
+                    GridSpace up = null;
+                    GridSpace down = null;
+
+                    GridSpace downLeft = null;
+                    GridSpace upLeft = null;
+                    GridSpace downRight = null;
+                    GridSpace upRight = null;
+
+
+                    left = lineHorizontalCheck[0].leftNeighbour;
+                    up = lineHorizontalCheck[0].upNeighbour;
+                    down = lineHorizontalCheck[0].downNeighbour;
+                    right = lineHorizontalCheck[lineHorizontalCheck.Count - 1].rightNeighbour;
+
+                    downLeft = lineHorizontalCheck[0].downLeftNeighbour;
+                    upLeft = lineHorizontalCheck[0].upLeftNeighbour;
+                    downRight = lineHorizontalCheck[0].downRightNeighbour;
+                    upRight = lineHorizontalCheck[0].upRightNeighbour;
+                    TryAddTarget(allTargets, left, right, up, down, downLeft, upLeft, downRight, upRight);
+                    AI_Click_And_End(ChooseTarget(allTargets));
                 }
             }
             
-            /*
-            for(int i = 0; i < lineHorizontalCheck.Count; i++)
-            {
-                var obj = lineHorizontalCheck[i];
-                if(obj.leftNeighbour != null)
-                {
-
-                }
-            }
-            */
-            //}
         }
     }
     #endregion
@@ -470,7 +520,7 @@ public class GameController : MonoBehaviour
 
         if (isGameOver)
         {
-            SetInteractibleAllButtons(false);
+            SetInteractibleAllNoEmptyButtons(false);
             GameOverPanel.SetActive(true);
         }
     }
@@ -523,6 +573,10 @@ public class GameController : MonoBehaviour
                 if (returnList != null)
                 {
                     returnList.Add(obj);
+                    if(count <= 1)
+                    {
+                        return true;
+                    }
                 }
                 TT = GetNeighbour(obj, line);
                 var target = TT;
