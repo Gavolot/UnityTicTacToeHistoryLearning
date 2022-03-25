@@ -47,8 +47,7 @@ public class GridSpace : MonoBehaviour
 
     public bool IsEmpty()
     {
-        return (buttonText.text != gameController.Player1Side || buttonText.text != gameController.Player2Side)
-            ? true : false;
+        return buttonText.text == "" ? true : false;
     }
 
     public void SetSpace()

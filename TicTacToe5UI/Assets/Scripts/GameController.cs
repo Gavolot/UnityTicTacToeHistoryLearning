@@ -383,16 +383,16 @@ public class GameController : MonoBehaviour
         }
         return isClicked;
     }
+
+    
     public void AI_Turn()
     {
-
         SetInteractibleAllNoEmptyButtons(false);
         lineHorizontalCheck.Clear();
         allTargets.Clear();
         string targetPlayerSideAnalis = "";
         List<GridSpace> targetPlayerSideListSpacesAnalis = null;
-
-        
+        //====
         if (aiSide == Player1Side)
         {
             targetPlayerSideAnalis = Player2Side;
@@ -403,30 +403,110 @@ public class GameController : MonoBehaviour
             targetPlayerSideAnalis = Player1Side;
             targetPlayerSideListSpacesAnalis = gridSpacesPlayer1InGame;
         }
-
-        bool okPlayer = false;
-        bool okAI = false;
-        //Изыски первого хода ИИ, он может выбрать сходить в случайно позиции на доске
-        //либо сходить в случайной позиции возле игрока
-
-
-        if (steps >= 0)
+        //====
+        bool okMoreAI = !AI_SipleFirstSteps(targetPlayerSideListSpacesAnalis, targetPlayerSideAnalis);
+        //====
+        //Более сложная версия ИИ, которая уже пытается помешать игроку выиграть
+        if (okMoreAI)
         {
+            for (int size = 4; size > 1; size--)
+            {
+                for (int i = 0; i < (int)LineCheck.Size; i++)
+                {
+                    winList.Clear();
+                    LineCheck check = (LineCheck)i;
+                    lineHorizontalCheck.Clear();
+                    CheckLine(
+                    targetPlayerSideListSpacesAnalis,
+                    targetPlayerSideAnalis,
+                    check,
+                    size,
+                    lineHorizontalCheck);
+
+                    /*
+                    for(var j = 0; j < lineHorizontalCheck.Count; j++)
+                    {
+                        if(check == (int)LineCheck.Horizontal)
+                        {
+
+                        }
+                    }
+                    */
+                    if (check == LineCheck.Horizontal)
+                    {
+                        GridSpace left = null;
+                        GridSpace right = null;
+                        try
+                        {
+                            left = lineHorizontalCheck[0].leftNeighbour;
+                        }
+                        catch
+                        {
+                            left = null;
+                        }
+                        try
+                        {
+                            right = lineHorizontalCheck[lineHorizontalCheck.Count - 1].rightNeighbour;
+                        }
+                        catch
+                        {
+                            right = null;
+                        }
+                        bool ok = true;
+
+
+                        if (left != null)
+                        {
+                            if (left.IsEmpty())
+                            {
+                                AI_Click_And_End(left);
+                                ok = false;
+                                return;
+                            }
+                        }
+
+                        if (right != null)
+                        {
+                            if (right.IsEmpty())
+                            {
+                                AI_Click_And_End(right);
+                                ok = false;
+                                return;
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+
+    }
+
+    //Изыски первого хода ИИ, он может выбрать сходить в случайно позиции на доске
+    //либо сходить в случайной позиции возле игрока
+    private bool AI_SipleFirstSteps(List<GridSpace> listSpacesAnalis, string playerSideAnalis)
+    {
+        
+        if (steps <= 1)
+        {
+            bool okPlayer = false;
             var rnd = Random.Range(1, 100);
-            //if(rnd <= 50)
+            if (rnd <= 50)
             {
                 AI_ChooseTargetOnBoardAndClick();
+                return true;
             }
-            /*else
+            else
             {
-                
+
                 okPlayer = CheckLine(
-                targetPlayerSideListSpacesAnalis,
-                targetPlayerSideAnalis,
+                listSpacesAnalis,
+                playerSideAnalis,
                 LineCheck.Horizontal,
                 1,
                 lineHorizontalCheck);
-                
+
                 if (okPlayer)
                 {
                     GridSpace left = null;
@@ -453,15 +533,18 @@ public class GameController : MonoBehaviour
                     if (allTargets.Count > 0)
                     {
                         AI_Click_And_End(ChooseTarget(allTargets));
+                        return true;
                     }
                     else
                     {
                         AI_ChooseTargetOnBoardAndClick();
+                        return true;
                     }
                 }
-            } */
-            
+            }
+
         }
+        return false;
     }
     #endregion
 
