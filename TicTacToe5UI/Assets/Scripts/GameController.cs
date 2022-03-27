@@ -48,8 +48,25 @@ public class GameController : MonoBehaviour
     public int boardSizeY = 10;
     public int boardSizeX = 10;
 
-
+    public enum LineCheck
+    {
+        Horizontal,
+        Vertical,
+        DiagonalLeft,
+        DiagonalRight,
+        Size
+    }
     private const int _winCount = 5;
+    List<GridSpace> winList = new List<GridSpace>();
+
+    //AI
+    List<GridSpace> lineHorizontalCheck = new List<GridSpace>();
+    List<GridSpace> lineVerticalCheck = new List<GridSpace>();
+    List<GridSpace> lineDiagonalLeftCheck = new List<GridSpace>();
+    List<GridSpace> lineDiagonalRightCheck = new List<GridSpace>();
+
+    List<GridSpace> allTargets = new List<GridSpace>();
+    //
 
     private void Awake()
     {
@@ -123,7 +140,7 @@ public class GameController : MonoBehaviour
         {
             for (int X = 0; X < sizeX; X++)
             {
-                
+
                 allGridSpaces++;
                 var obj = GameObject.Instantiate(GridSpacePrefub);
                 obj.transform.SetParent(GridSpacesContainer.transform);
@@ -250,7 +267,7 @@ public class GameController : MonoBehaviour
     {
         buttonsList = new Button[textsList.Length];
         //gridSpaces = new GridSpace[textsList.Length];
-        for(var i = 0; i < textsList.Length; i++)
+        for (var i = 0; i < textsList.Length; i++)
         {
             var obj = textsList[i];
 
@@ -281,7 +298,8 @@ public class GameController : MonoBehaviour
 
     public void SetInteractibleAllNoEmptyButtons(bool interact)
     {
-        for (var i = 0; i < buttonsList.Length; i++) {
+        for (var i = 0; i < buttonsList.Length; i++)
+        {
 
             if (textsList[i].text == "")
             {
@@ -317,7 +335,7 @@ public class GameController : MonoBehaviour
 
     public void RestartGame()
     {
-        
+
         for (var i = 0; i < textsList.Length; i++)
         {
             var obj = textsList[i];
@@ -334,8 +352,7 @@ public class GameController : MonoBehaviour
     }
 
     #region AI_Logic
-    List<GridSpace> lineHorizontalCheck = new List<GridSpace>();
-    List<GridSpace> allTargets = new List<GridSpace>();
+
 
     private void AI_Click_And_End(GridSpace button)
     {
@@ -345,7 +362,8 @@ public class GameController : MonoBehaviour
 
     private void TryAddTarget(List<GridSpace> list, params GridSpace[] buttons)
     {
-        for(int i = 0; i < buttons.Length; i++) {
+        for (int i = 0; i < buttons.Length; i++)
+        {
             var obj = buttons[i];
             if (obj != null)
             {
@@ -384,11 +402,16 @@ public class GameController : MonoBehaviour
         return isClicked;
     }
 
-    
+
     public void AI_Turn()
     {
         SetInteractibleAllNoEmptyButtons(false);
+
         lineHorizontalCheck.Clear();
+        lineVerticalCheck.Clear();
+        lineDiagonalLeftCheck.Clear();
+        lineDiagonalRightCheck.Clear();
+
         allTargets.Clear();
         string targetPlayerSideAnalis = "";
         List<GridSpace> targetPlayerSideListSpacesAnalis = null;
@@ -409,76 +432,262 @@ public class GameController : MonoBehaviour
         //Более сложная версия ИИ, которая уже пытается помешать игроку выиграть
         if (okMoreAI)
         {
-            for (int size = 4; size > 1; size--)
+            List<GridSpace> targetList = null;
+            #region DiagonalLeft
+            for (int size = 4; size > 0; size--)
             {
-                for (int i = 0; i < (int)LineCheck.Size; i++)
+                targetList = lineDiagonalLeftCheck;
+                var ok = false;
+                targetList.Clear();
+                CheckLine(
+                targetPlayerSideListSpacesAnalis,
+                targetPlayerSideAnalis,
+                LineCheck.DiagonalLeft,
+                size,
+                targetList);
+                GridSpace one = null;
+                GridSpace two = null;
+
+                try
                 {
-                    winList.Clear();
-                    LineCheck check = (LineCheck)i;
-                    lineHorizontalCheck.Clear();
-                    CheckLine(
-                    targetPlayerSideListSpacesAnalis,
-                    targetPlayerSideAnalis,
-                    check,
-                    size,
-                    lineHorizontalCheck);
+                    if (!targetList[0].isBlockDiagonalLeft)
+                        one = targetList[0].upRightNeighbour;
+                }
+                catch
+                {
+                    one = null;
+                }
 
-                    /*
-                    for(var j = 0; j < lineHorizontalCheck.Count; j++)
+                try
+                {
+                    if (!targetList[targetList.Count - 1].isBlockDiagonalLeft)
+                        two = targetList[targetList.Count - 1].downLeftNeighbour;
+                }
+                catch
+                {
+                    two = null;
+                }
+                if (one != null)
+                {
+                    if (one.IsEmpty())
                     {
-                        if(check == (int)LineCheck.Horizontal)
-                        {
-
-                        }
+                        AI_Click_And_End(one);
+                        ok = true;
                     }
-                    */
-                    if (check == LineCheck.Horizontal)
+                }
+
+                if (two != null)
+                {
+                    if (two.IsEmpty())
                     {
-                        GridSpace left = null;
-                        GridSpace right = null;
-                        try
-                        {
-                            left = lineHorizontalCheck[0].leftNeighbour;
-                        }
-                        catch
-                        {
-                            left = null;
-                        }
-                        try
-                        {
-                            right = lineHorizontalCheck[lineHorizontalCheck.Count - 1].rightNeighbour;
-                        }
-                        catch
-                        {
-                            right = null;
-                        }
-                        bool ok = true;
-
-
-                        if (left != null)
-                        {
-                            if (left.IsEmpty())
-                            {
-                                AI_Click_And_End(left);
-                                ok = false;
-                                return;
-                            }
-                        }
-
-                        if (right != null)
-                        {
-                            if (right.IsEmpty())
-                            {
-                                AI_Click_And_End(right);
-                                ok = false;
-                                return;
-                            }
-                        }
+                        AI_Click_And_End(two);
+                        ok = true;
                     }
+                }
 
+                //foreach (var obj in targetList)
+                //{
+                //obj.button.interactable = true;
+                //}
+
+
+                bool okBlock = false;
+                if (one != null && two != null)
+                {
+                    if (one.buttonText.text == aiSide && two.buttonText.text == aiSide)
+                    {
+                        okBlock = true;
+                    }
+                }
+
+                if (okBlock)
+                {
+                    foreach (var obj in targetList)
+                    {
+                        obj.isBlockDiagonalLeft = true;
+                        obj.button.interactable = true;
+                    }
+                }
+
+                if (ok)
+                {
+                    return;
+                }
+
+            }
+            #endregion
+            #region DiagonalRight
+            /*for (int size = 4; size > 1; size--)
+            {
+                lineDiagonal1Check.Clear();
+                CheckLine(
+                targetPlayerSideListSpacesAnalis,
+                targetPlayerSideAnalis,
+                LineCheck.DiagonalRight,
+                size,
+                lineDiagonal1Check);
+                GridSpace one = null;
+                GridSpace two = null;
+
+                try
+                {
+                    one = lineDiagonal1Check[0].upLeftNeighbour;
+                }
+                catch
+                {
+                    one = null;
+                }
+
+                try
+                {
+                    two = lineDiagonal1Check[lineDiagonal1Check.Count - 1].downRightNeighbour;
+                }
+                catch
+                {
+                    one = null;
+                }
+                if (one != null)
+                {
+                    if (one.IsEmpty())
+                    {
+                        AI_Click_And_End(one);
+                        return;
+                    }
+                }
+
+                if (two != null)
+                {
+                    if (two.IsEmpty())
+                    {
+                        AI_Click_And_End(two);
+                        return;
+                    }
+                }
+
+                foreach (var obj in lineDiagonal1Check)
+                {
+                    obj.button.interactable = true;
+                }
+            }*/
+            #endregion
+        }
+
+
+
+        //while (size > 0)
+        //{
+        /*
+        for (int i = 0; i < (int)LineCheck.Size; i++)
+        {
+            LineCheck check = (LineCheck)i;
+            lineHorizontalCheck.Clear();
+            lineVerticalCheck.Clear();
+            lineDiagonal1Check.Clear();
+            lineDiagonal2Check.Clear();
+
+            List<GridSpace> targetList = null;
+
+            if (check == LineCheck.Horizontal)
+            {
+                targetList = lineHorizontalCheck;
+            }
+            else
+            if (check == LineCheck.Vertical)
+            {
+                targetList = lineVerticalCheck;
+            }
+            else if (check == LineCheck.DiagonalLeft)
+            {
+                targetList = lineDiagonal1Check;
+            }
+            else if (check == LineCheck.DiagonalRight)
+            {
+                targetList = lineDiagonal2Check;
+            }
+
+            CheckLine(
+            targetPlayerSideListSpacesAnalis,
+            targetPlayerSideAnalis,
+            check,
+            size,
+            targetList);
+            GridSpace one = null;
+            GridSpace two = null;
+            try
+            {
+                switch (check)
+                {
+                    case LineCheck.Horizontal:
+                        one = targetList[0].leftNeighbour;
+                        break;
+                    case LineCheck.Vertical:
+                        one = targetList[0].upNeighbour;
+                        break;
+                    case LineCheck.DiagonalLeft:
+                        one = targetList[0].downLeftNeighbour;
+                        break;
+                    case LineCheck.DiagonalRight:
+                        one = targetList[0].downRightNeighbour;
+                        break;
+                }
+
+            }
+            catch
+            {
+                one = null;
+            }
+            try
+            {
+                switch (check)
+                {
+                    case LineCheck.Horizontal:
+                        two = targetList[targetList.Count - 1].rightNeighbour;
+                        break;
+                    case LineCheck.Vertical:
+                        two = targetList[targetList.Count - 1].downNeighbour;
+                        break;
+                    case LineCheck.DiagonalLeft:
+                        two = targetList[targetList.Count - 1].upRightNeighbour;
+                        break;
+                    case LineCheck.DiagonalRight:
+                        two = targetList[targetList.Count - 1].upLeftNeighbour;
+                        break;
                 }
             }
+            catch
+            {
+                two = null;
+            }
+            //----
+            if (two != null)
+            {
+                if (two.IsEmpty())
+                {
+                    AI_Click_And_End(two);
+                    return;
+                }
+            }
+
+            if (one != null)
+            {
+                if (one.IsEmpty())
+                {
+                    AI_Click_And_End(one);
+                    return;
+                }
+            }
+
+
         }
+        */
+
+
+        //size--;
+        //}
+        //}
+        //AI_ChooseTargetOnBoardAndClick();
+
+        //}
 
 
     }
@@ -487,7 +696,7 @@ public class GameController : MonoBehaviour
     //либо сходить в случайной позиции возле игрока
     private bool AI_SipleFirstSteps(List<GridSpace> listSpacesAnalis, string playerSideAnalis)
     {
-        
+
         if (steps <= 1)
         {
             bool okPlayer = false;
@@ -548,10 +757,10 @@ public class GameController : MonoBehaviour
     }
     #endregion
 
-    List<GridSpace> winList = new List<GridSpace>();
+
     public void EndTurn()
     {
-        
+
         if (with_ai)
         {
             //if(gameController.playerSide == buttonText.text)
@@ -563,7 +772,7 @@ public class GameController : MonoBehaviour
         bool player2Win = false;
         bool isGameOver = false;
 
-        
+
         if (!with_ai)
         {
             ChangePlayerSide();
@@ -576,13 +785,13 @@ public class GameController : MonoBehaviour
             LineCheck check = (LineCheck)i;
             CheckLine(gridSpacesPlayer1InGame, Player1Side, check, _winCount, winList);
 
-            if(winList.Count == _winCount)
+            if (winList.Count == _winCount)
             {
                 player1Win = true;
             }
             if (player1Win)
             {
-                for(int t = 0; t < winList.Count; t++)
+                for (int t = 0; t < winList.Count; t++)
                 {
                     var obj = winList[t];
                     obj.SetColor(Color.green);
@@ -615,7 +824,7 @@ public class GameController : MonoBehaviour
                 }
             }
         }
-        
+
 
         //===
         if (player1Win)
@@ -636,7 +845,7 @@ public class GameController : MonoBehaviour
         {
             //Check Draw win condition
             bool ok = false;
-            if(gridSpacesPlayer1InGame.Count + gridSpacesPlayer2InGame.Count == allGridSpaces)
+            if (gridSpacesPlayer1InGame.Count + gridSpacesPlayer2InGame.Count == allGridSpaces)
             {
                 ok = true;
             }
@@ -657,14 +866,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public enum LineCheck
-    {
-        Horizontal,
-        Vertical,
-        DiagonalUp,
-        DiagonalDown,
-        Size
-    }
+
 
 
     private GridSpace GetNeighbour(GridSpace obj, LineCheck line)
@@ -672,24 +874,98 @@ public class GameController : MonoBehaviour
         GridSpace TT = null;
         if (line == LineCheck.Horizontal)
         {
-            TT = obj.rightNeighbour;
+            if (obj.rightNeighbour != null)
+            {
+                if (!obj.isBlockHorizontal)
+                {
+                    TT = obj.rightNeighbour;
+                }
+                else
+                {
+                    TT = null;
+                }
+            }
         }
         else
         if (line == LineCheck.Vertical)
         {
-            TT = obj.upNeighbour;
+
+            if (obj.upNeighbour != null)
+            {
+                if (!obj.isBlockVertical)
+                {
+                    TT = obj.upNeighbour;
+                }
+                else
+                {
+                    TT = null;
+                }
+            }
         }
         else
-        if (line == LineCheck.DiagonalDown)
+        if (line == LineCheck.DiagonalLeft)
         {
-            TT = obj.downLeftNeighbour;
+            if (obj.downLeftNeighbour != null)
+            {
+                if (!obj.isBlockDiagonalLeft)
+                {
+                    TT = obj.downLeftNeighbour;
+                }
+                else
+                {
+                    TT = null;
+                }
+            }
         }
         else
-        if (line == LineCheck.DiagonalUp)
+        if (line == LineCheck.DiagonalRight)
         {
-            TT = obj.downRightNeighbour;
+            if (obj.downRightNeighbour != null)
+            {
+                if (!obj.isBlockDiagonalRight)
+                {
+                    TT = obj.downRightNeighbour;
+                }
+                else
+                {
+                    TT = null;
+                }
+            }
         }
         return TT;
+    }
+
+    private bool CheckBlock(LineCheck line, GridSpace obj)
+    {
+        if (line == LineCheck.Horizontal)
+        {
+            if (obj.isBlockHorizontal)
+            {
+                return true;
+            }
+        }
+        if (line == LineCheck.Vertical)
+        {
+            if (obj.isBlockVertical)
+            {
+                return true;
+            }
+        }
+        if (line == LineCheck.DiagonalLeft)
+        {
+            if (obj.isBlockDiagonalLeft)
+            {
+                return true;
+            }
+        }
+        if (line == LineCheck.DiagonalRight)
+        {
+            if (obj.isBlockDiagonalRight)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     #region CheckLines
@@ -705,14 +981,15 @@ public class GameController : MonoBehaviour
             {
                 __I++;
 
-                    if (returnList != null)
-                    {
-                        returnList.Add(obj);
-                        if(count == 1)
-                            return true;
-                    }
-                
-            
+                if (CheckBlock(line, obj)) continue;
+                if (returnList != null)
+                {
+                    returnList.Add(obj);
+                    if (count == 1)
+                        return true;
+                }
+
+
                 TT = GetNeighbour(obj, line);
                 var target = TT;
 
@@ -725,6 +1002,7 @@ public class GameController : MonoBehaviour
                             if (target.buttonText.text == PLAYER_SIDE)
                             {
                                 //--
+                                if (CheckBlock(line, target)) return false;
                                 if (returnList != null)
                                 {
                                     returnList.Add(target);
@@ -737,6 +1015,7 @@ public class GameController : MonoBehaviour
                                 }
                                 TT = GetNeighbour(target, line);
                                 target = TT;
+                                return false;
                             }
                             else
                             {

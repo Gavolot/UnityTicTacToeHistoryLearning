@@ -92,6 +92,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 8630747531962304229}
   buttonText: {fileID: 8630747532041401498}
+  upNeighbour: {fileID: 0}
+  downNeighbour: {fileID: 0}
+  leftNeighbour: {fileID: 0}
+  rightNeighbour: {fileID: 0}
+  upLeftNeighbour: {fileID: 0}
+  upRightNeighbour: {fileID: 0}
+  downLeftNeighbour: {fileID: 0}
+  downRightNeighbour: {fileID: 0}
 --- !u!114 &8630747531962304229
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -20,6 +20,10 @@ public class GridSpace : MonoBehaviour
     public GridSpace downLeftNeighbour = null;
     public GridSpace downRightNeighbour = null;
 
+    public bool isBlockDiagonalLeft = false;
+    public bool isBlockDiagonalRight = false;
+    public bool isBlockHorizontal = false;
+    public bool isBlockVertical = false;
     public void ClickButton(string Side, Color afterPressedColor)
     {
         button.interactable = false;
