@@ -949,7 +949,7 @@ MonoBehaviour:
   textsList: []
   allGridSpacesList: []
   playerSide: X
-  with_ai: 0
+  with_ai: 1
   aiSide: 
   Player1Side: X
   Player2Side: O
