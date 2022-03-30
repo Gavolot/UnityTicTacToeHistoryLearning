@@ -334,7 +334,7 @@ public class GameController : MonoBehaviour
     }
 
     #region AI_Logic
-    List<GridSpace> lineHorizontalCheck = new List<GridSpace>();
+
     List<GridSpace> allTargets = new List<GridSpace>();
 
     private void AI_Click_And_End(GridSpace button)
@@ -384,11 +384,11 @@ public class GameController : MonoBehaviour
         return isClicked;
     }
 
-    
+    List<GridSpace> lineChecks = new List<GridSpace>();
     public void AI_Turn()
     {
         SetInteractibleAllNoEmptyButtons(false);
-        lineHorizontalCheck.Clear();
+        //lineHorizontalCheck.Clear();
         allTargets.Clear();
         string targetPlayerSideAnalis = "";
         List<GridSpace> targetPlayerSideListSpacesAnalis = null;
@@ -409,76 +409,79 @@ public class GameController : MonoBehaviour
         //Более сложная версия ИИ, которая уже пытается помешать игроку выиграть
         if (okMoreAI)
         {
+            /*
             for (int size = 4; size > 1; size--)
             {
-                for (int i = 0; i < (int)LineCheck.Size; i++)
-                {
-                    winList.Clear();
-                    LineCheck check = (LineCheck)i;
-                    lineHorizontalCheck.Clear();
-                    CheckLine(
-                    targetPlayerSideListSpacesAnalis,
-                    targetPlayerSideAnalis,
-                    check,
-                    size,
-                    lineHorizontalCheck);
 
-                    /*
-                    for(var j = 0; j < lineHorizontalCheck.Count; j++)
-                    {
-                        if(check == (int)LineCheck.Horizontal)
-                        {
-
-                        }
-                    }
-                    */
-                    if (check == LineCheck.Horizontal)
-                    {
-                        GridSpace left = null;
-                        GridSpace right = null;
-                        try
-                        {
-                            left = lineHorizontalCheck[0].leftNeighbour;
-                        }
-                        catch
-                        {
-                            left = null;
-                        }
-                        try
-                        {
-                            right = lineHorizontalCheck[lineHorizontalCheck.Count - 1].rightNeighbour;
-                        }
-                        catch
-                        {
-                            right = null;
-                        }
-                        bool ok = true;
-
-
-                        if (left != null)
-                        {
-                            if (left.IsEmpty())
-                            {
-                                AI_Click_And_End(left);
-                                ok = false;
-                                return;
-                            }
-                        }
-
-                        if (right != null)
-                        {
-                            if (right.IsEmpty())
-                            {
-                                AI_Click_And_End(right);
-                                ok = false;
-                                return;
-                            }
-                        }
-                    }
-
-                }
             }
-        }
+            */
+            lineChecks.Clear();
+            int size = 4;
+            for (int i = 0; i < (int)LineCheck.Size; i++)
+            {
+            }
+
+
+                /*for (int size = 4; size > 1; size--)
+                {
+                    for (int i = 0; i < (int)LineCheck.Size; i++)
+                    {
+                        winList.Clear();
+                        LineCheck check = (LineCheck)i;
+                        lineHorizontalCheck.Clear();
+                        CheckLine(
+                        targetPlayerSideListSpacesAnalis,
+                        targetPlayerSideAnalis,
+                        check,
+                        size,
+                        lineHorizontalCheck);
+                        if (check == LineCheck.Horizontal)
+                        {
+                            GridSpace left = null;
+                            GridSpace right = null;
+                            try
+                            {
+                                left = lineHorizontalCheck[0].leftNeighbour;
+                            }
+                            catch
+                            {
+                                left = null;
+                            }
+                            try
+                            {
+                                right = lineHorizontalCheck[lineHorizontalCheck.Count - 1].rightNeighbour;
+                            }
+                            catch
+                            {
+                                right = null;
+                            }
+                            bool ok = true;
+
+
+                            if (left != null)
+                            {
+                                if (left.IsEmpty())
+                                {
+                                    AI_Click_And_End(left);
+                                    ok = false;
+                                    return;
+                                }
+                            }
+
+                            if (right != null)
+                            {
+                                if (right.IsEmpty())
+                                {
+                                    AI_Click_And_End(right);
+                                    ok = false;
+                                    return;
+                                }
+                            }
+                        }
+
+                    }
+                }*/
+            }
 
 
     }
@@ -500,12 +503,13 @@ public class GameController : MonoBehaviour
             else
             {
 
+                List<GridSpace> lines = new List<GridSpace>();
                 okPlayer = CheckLine(
                 listSpacesAnalis,
                 playerSideAnalis,
                 LineCheck.Horizontal,
                 1,
-                lineHorizontalCheck);
+                lines);
 
                 if (okPlayer)
                 {
@@ -520,15 +524,15 @@ public class GameController : MonoBehaviour
                     GridSpace upRight = null;
 
 
-                    left = lineHorizontalCheck[0].leftNeighbour;
-                    up = lineHorizontalCheck[0].upNeighbour;
-                    down = lineHorizontalCheck[0].downNeighbour;
-                    right = lineHorizontalCheck[lineHorizontalCheck.Count - 1].rightNeighbour;
+                    left = lines[0].leftNeighbour;
+                    up = lines[0].upNeighbour;
+                    down = lines[0].downNeighbour;
+                    right = lines[lines.Count - 1].rightNeighbour;
 
-                    downLeft = lineHorizontalCheck[0].downLeftNeighbour;
-                    upLeft = lineHorizontalCheck[0].upLeftNeighbour;
-                    downRight = lineHorizontalCheck[0].downRightNeighbour;
-                    upRight = lineHorizontalCheck[0].upRightNeighbour;
+                    downLeft = lines[0].downLeftNeighbour;
+                    upLeft = lines[0].upLeftNeighbour;
+                    downRight = lines[0].downRightNeighbour;
+                    upRight = lines[0].upRightNeighbour;
                     TryAddTarget(allTargets, left, right, up, down, downLeft, upLeft, downRight, upRight);
                     if (allTargets.Count > 0)
                     {
