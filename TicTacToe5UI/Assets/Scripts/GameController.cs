@@ -3,7 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
-
+public enum LineCheck
+{
+    Horizontal,
+    Vertical,
+    DiagonalUp,
+    DiagonalDown,
+    Size
+}
 public class GameController : MonoBehaviour
 {
 
@@ -385,6 +392,156 @@ public class GameController : MonoBehaviour
     }
 
     List<GridSpace> lineChecks = new List<GridSpace>();
+
+    public bool AI_Check_Lines(int size, List<GridSpace> targetPlayerSideListSpacesAnalis, string targetPlayerSideAnalis)
+    {
+        lineChecks.Clear();
+        for (int i = 0; i < (int)LineCheck.Size; i++)
+        {
+            LineCheck check = (LineCheck)i;
+            CheckLine(
+                targetPlayerSideListSpacesAnalis,
+                targetPlayerSideAnalis,
+                check,
+                size,
+                lineChecks
+                );
+            if (lineChecks.Count == size)
+            {
+                GridSpace one = lineChecks[0].upLeftNeighbour;
+                GridSpace two = lineChecks[lineChecks.Count - 1].downRightNeighbour;
+
+                if (check == LineCheck.DiagonalDown)
+                {
+                    one = lineChecks[0].upRightNeighbour;
+                    two = lineChecks[lineChecks.Count - 1].downLeftNeighbour;
+                }
+                else
+                if (check == LineCheck.DiagonalUp)
+                {
+                    one = lineChecks[0].upLeftNeighbour;
+                    two = lineChecks[lineChecks.Count - 1].downRightNeighbour;
+                }
+                else
+                if (check == LineCheck.Horizontal)
+                {
+                    one = lineChecks[0].leftNeighbour;
+                    two = lineChecks[lineChecks.Count - 1].rightNeighbour;
+                }
+                else
+                if (check == LineCheck.Vertical)
+                {
+                    one = lineChecks[0].downNeighbour;
+                    two = lineChecks[lineChecks.Count - 1].upNeighbour;
+                }
+
+                for (int t = 0; t < lineChecks.Count; t++)
+                {
+                    var obj = lineChecks[t];
+                    obj.SetColor(Color.grey);
+                }
+
+                //--
+                if (two != null && one == null)
+                {
+                    if (two.buttonText.text == "")
+                    {
+                        AI_Click_And_End(two);
+                        two.SetColor(Color.cyan);
+                        return true;
+                    }
+                    else
+                    {
+                        for (int t = 0; t < lineChecks.Count; t++)
+                        {
+                            var obj = lineChecks[t];
+                            obj.AddBlock(check);
+                        }
+                    }
+                }
+                else
+                if (one != null && two == null)
+                {
+                    if (one.buttonText.text == "")
+                    {
+                        AI_Click_And_End(one);
+                        one.SetColor(Color.cyan);
+                        return true;
+                    }
+                    else
+                    {
+                        for (int t = 0; t < lineChecks.Count; t++)
+                        {
+                            var obj = lineChecks[t];
+                            obj.AddBlock(check);
+                        }
+                    }
+                }
+                else
+                if (one != null && two != null)
+                {
+                    if (one.buttonText.text == "")
+                    {
+                        AI_Click_And_End(one);
+                        one.SetColor(Color.cyan);
+                        return true;
+                    }
+                    else
+                    if (two.buttonText.text == "")
+                    {
+                        AI_Click_And_End(two);
+                        two.SetColor(Color.cyan);
+                        return true;
+                    }
+                    else
+                    {
+                        for (int t = 0; t < lineChecks.Count; t++)
+                        {
+                            var obj = lineChecks[t];
+                            obj.AddBlock(check);
+                        }
+                    }
+                    if (two.buttonText.text == "")
+                    {
+                        AI_Click_And_End(two);
+                        two.SetColor(Color.cyan);
+                        return true;
+                    }
+                    else
+                    if (one.buttonText.text == "")
+                    {
+                        AI_Click_And_End(one);
+                        one.SetColor(Color.cyan);
+                        return true;
+                    }
+                    else
+                    {
+                        for (int t = 0; t < lineChecks.Count; t++)
+                        {
+                            var obj = lineChecks[t];
+                            obj.AddBlock(check);
+                        }
+                    }
+                }
+                else
+                if (one == null && two == null)
+                {
+                    for (int t = 0; t < lineChecks.Count; t++)
+                    {
+                        var obj = lineChecks[t];
+                        obj.AddBlock(check);
+                    }
+                    for (int t = 0; t < lineChecks.Count; t++)
+                    {
+                        var obj = lineChecks[t];
+                        obj.SetColor(Color.black);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public void AI_Turn()
     {
         SetInteractibleAllNoEmptyButtons(false);
@@ -415,138 +572,26 @@ public class GameController : MonoBehaviour
 
             }
             */
-            lineChecks.Clear();
-            int size = 4;
-            for (int i = 0; i < (int)LineCheck.Size; i++)
+            //lineChecks.Clear();
+            //int size = 4;
+
+            var ok = false;
+
+            ok = AI_Check_Lines(4, targetPlayerSideListSpacesAnalis, targetPlayerSideAnalis);
+
+            if (!ok)
             {
-                LineCheck check = (LineCheck)i;
-                CheckLine(
-                    targetPlayerSideListSpacesAnalis,
-                    targetPlayerSideAnalis,
-                    check,
-                    size,
-                    lineChecks
-                    );
-                if(lineChecks.Count == size)
-                {
-
-                    if (check == LineCheck.DiagonalUp)
-                    {
-                        GridSpace one = lineChecks[0].upLeftNeighbour;
-                        GridSpace two = lineChecks[lineChecks.Count - 1].downRightNeighbour;
-                        for (int t = 0; t < lineChecks.Count; t++)
-                        {
-                            var obj = lineChecks[t];
-                            obj.SetColor(Color.grey);
-                        }
-
-
-
-
-                        //--
-                        if(two != null && one == null)
-                        {
-                            if (two.buttonText.text == "")
-                            {
-                                AI_Click_And_End(two);
-                                two.downRightNeighbour.SetColor(Color.cyan);
-                                return;
-                            }
-                            else
-                            {
-                                for (int t = 0; t < lineChecks.Count; t++)
-                                {
-                                    var obj = lineChecks[t];
-                                    obj.DiagonalUpBlock = true;
-                                }
-                            }
-                        }
-                        else
-                        if(one != null && two == null)
-                        {
-                            if (one.buttonText.text == "")
-                            {
-                                AI_Click_And_End(one);
-                                one.SetColor(Color.cyan);
-                                return;
-                            }
-                            else
-                            {
-                                for (int t = 0; t < lineChecks.Count; t++)
-                                {
-                                    var obj = lineChecks[t];
-                                    obj.DiagonalUpBlock = true;
-                                }
-                            }
-                        }
-                        else
-                        if (one != null && two != null)
-                        {
-                            if (one.buttonText.text == "")
-                            {
-                                AI_Click_And_End(one);
-                                one.SetColor(Color.cyan);
-                                return;
-                            }
-                            else
-                            if (two.buttonText.text == "")
-                            {
-                                AI_Click_And_End(two);
-                                two.downRightNeighbour.SetColor(Color.cyan);
-                                return;
-                            }
-                            else
-                            {
-                                for (int t = 0; t < lineChecks.Count; t++)
-                                {
-                                    var obj = lineChecks[t];
-                                    obj.DiagonalUpBlock = true;
-                                }
-                            }
-                            if (two.buttonText.text == "")
-                            {
-                                AI_Click_And_End(two);
-                                two.downRightNeighbour.SetColor(Color.cyan);
-                                return;
-                            }
-                            else
-                            if (one.buttonText.text == "")
-                            {
-                                AI_Click_And_End(one);
-                                one.upLeftNeighbour.SetColor(Color.cyan);
-                                return;
-                            }
-                            else
-                            {
-                                for (int t = 0; t < lineChecks.Count; t++)
-                                {
-                                    var obj = lineChecks[t];
-                                    obj.DiagonalUpBlock = true;
-                                }
-                            }
-                        }
-                        else
-                        if(one == null && two == null)
-                        {
-                            for (int t = 0; t < lineChecks.Count; t++)
-                            {
-                                var obj = lineChecks[t];
-                                obj.DiagonalUpBlock = true;
-                            }
-                            for (int t = 0; t < lineChecks.Count; t++)
-                            {
-                                var obj = lineChecks[t];
-                                obj.SetColor(Color.black);
-                            }
-                        }
-
-                        
-                    }
-
-                    
-                }
+                ok = AI_Check_Lines(3, targetPlayerSideListSpacesAnalis, targetPlayerSideAnalis);
             }
-            AI_ChooseTargetOnBoardAndClick();
+            if (!ok)
+            {
+                ok = AI_Check_Lines(2, targetPlayerSideListSpacesAnalis, targetPlayerSideAnalis);
+            }
+
+            if (!ok)
+            {
+                AI_ChooseTargetOnBoardAndClick();
+            }
             return;
 
 
@@ -686,10 +731,10 @@ public class GameController : MonoBehaviour
         
         if (with_ai)
         {
-            //if(gameController.playerSide == buttonText.text)
-            //{
-            AI_Turn();
-            //}
+            if(GetPlayerSide() == Player2Side)
+            {
+                AI_Turn();
+            }
         }
         bool player1Win = false;
         bool player2Win = false;
@@ -720,6 +765,14 @@ public class GameController : MonoBehaviour
                     obj.SetColor(Color.green);
                 }
                 break;
+            }
+        }
+
+        if (with_ai)
+        {
+            if (GetPlayerSide() == Player1Side)
+            {
+                AI_Turn();
             }
         }
 
@@ -789,16 +842,6 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public enum LineCheck
-    {
-        Horizontal,
-        Vertical,
-        DiagonalUp,
-        DiagonalDown,
-        Size
-    }
-
-
     private GridSpace GetNeighbour(GridSpace obj, LineCheck line)
     {
         GridSpace TT = null;
@@ -841,12 +884,18 @@ public class GameController : MonoBehaviour
                     if (returnList != null)
                     {
                         isBlock = false;
+                    /*
                         if(line == LineCheck.DiagonalUp)
                         {
                             if (obj.DiagonalUpBlock)
                             {
                                 isBlock = true;
                             }
+                        }
+                    */
+                        if (obj.IsHaveBlock(line))
+                        {
+                            isBlock = true;
                         }
                         if(!isBlock)
                         returnList.Add(obj);
@@ -870,12 +919,9 @@ public class GameController : MonoBehaviour
                                 if (returnList != null)
                                 {
                                     isBlock = false;
-                                    if (line == LineCheck.DiagonalUp)
+                                    if (obj.IsHaveBlock(line))
                                     {
-                                        if (obj.DiagonalUpBlock)
-                                        {
-                                            isBlock = true;
-                                        }
+                                        isBlock = true;
                                     }
                                     if (!isBlock)
                                         returnList.Add(target);

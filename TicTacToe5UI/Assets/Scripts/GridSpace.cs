@@ -21,7 +21,29 @@ public class GridSpace : MonoBehaviour
     public GridSpace downRightNeighbour = null;
 
 
-    public bool DiagonalUpBlock = false;
+    //public bool DiagonalUpBlock = false;
+
+    private List<LineCheck> blocks = new List<LineCheck>((int)LineCheck.Size);
+
+    public bool IsHaveBlock(LineCheck lineBlock)
+    {
+        for(int i = 0; i < blocks.Count; i++)
+        {
+            if(blocks[i] == lineBlock)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void AddBlock(LineCheck lineBlock)
+    {
+        if (!IsHaveBlock(lineBlock))
+        {
+            blocks.Add(lineBlock);
+        }
+    }
 
     public void ClickButton(string Side, Color afterPressedColor)
     {
