@@ -724,36 +724,11 @@ public class GameController : MonoBehaviour
                 }
             }
         }
-
-
-        
+        //===
         if (!with_ai)
         {
             ChangePlayerSide();
         }
-        //Check 5 line win
-        /*
-        winList.Clear();
-        for (int i = 0; i < (int)LineCheck.Size; i++)
-        {
-            winList.Clear();
-            LineCheck check = (LineCheck)i;
-            CheckLine(gridSpacesPlayer1InGame, Player1Side, check, _winCount, winList);
-
-            if(winList.Count == _winCount)
-            {
-                player1Win = true;
-            }
-            if (player1Win)
-            {
-                for(int t = 0; t < winList.Count; t++)
-                {
-                    var obj = winList[t];
-                    obj.SetColor(Color.green);
-                }
-                break;
-            }
-        }*/
 
         if (with_ai)
         {
@@ -767,34 +742,6 @@ public class GameController : MonoBehaviour
                 }
             }
         }
-
-        /*
-        if (!player1Win)
-        {
-            winList.Clear();
-            for (int i = 0; i < (int)LineCheck.Size; i++)
-            {
-                winList.Clear();
-                LineCheck check = (LineCheck)i;
-                CheckLine(gridSpacesPlayer2InGame, Player2Side, check, _winCount, winList);
-                if (winList.Count == _winCount)
-                {
-                    player2Win = true;
-                }
-                if (player2Win)
-                {
-                    for (int t = 0; t < winList.Count; t++)
-                    {
-                        var obj = winList[t];
-                        obj.SetColor(Color.green);
-                    }
-                    break;
-                }
-            }
-        }
-        */
-        
-
         //===
         if (player1Win)
         {
