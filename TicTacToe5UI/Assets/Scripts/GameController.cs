@@ -566,15 +566,6 @@ public class GameController : MonoBehaviour
         //Более сложная версия ИИ, которая уже пытается помешать игроку выиграть
         if (okMoreAI)
         {
-            /*
-            for (int size = 4; size > 1; size--)
-            {
-
-            }
-            */
-            //lineChecks.Clear();
-            //int size = 4;
-
             var ok = false;
 
             ok = AI_Check_Lines(4, targetPlayerSideListSpacesAnalis, targetPlayerSideAnalis);
@@ -593,70 +584,7 @@ public class GameController : MonoBehaviour
                 AI_ChooseTargetOnBoardAndClick();
             }
             return;
-
-
-            /*for (int size = 4; size > 1; size--)
-            {
-                for (int i = 0; i < (int)LineCheck.Size; i++)
-                {
-                    winList.Clear();
-                    LineCheck check = (LineCheck)i;
-                    lineHorizontalCheck.Clear();
-                    CheckLine(
-                    targetPlayerSideListSpacesAnalis,
-                    targetPlayerSideAnalis,
-                    check,
-                    size,
-                    lineHorizontalCheck);
-                    if (check == LineCheck.Horizontal)
-                    {
-                        GridSpace left = null;
-                        GridSpace right = null;
-                        try
-                        {
-                            left = lineHorizontalCheck[0].leftNeighbour;
-                        }
-                        catch
-                        {
-                            left = null;
-                        }
-                        try
-                        {
-                            right = lineHorizontalCheck[lineHorizontalCheck.Count - 1].rightNeighbour;
-                        }
-                        catch
-                        {
-                            right = null;
-                        }
-                        bool ok = true;
-
-
-                        if (left != null)
-                        {
-                            if (left.IsEmpty())
-                            {
-                                AI_Click_And_End(left);
-                                ok = false;
-                                return;
-                            }
-                        }
-
-                        if (right != null)
-                        {
-                            if (right.IsEmpty())
-                            {
-                                AI_Click_And_End(right);
-                                ok = false;
-                                return;
-                            }
-                        }
-                    }
-
-                }
-            }*/
         }
-
-
     }
 
     //Изыски первого хода ИИ, он может выбрать сходить в случайно позиции на доске
@@ -726,19 +654,77 @@ public class GameController : MonoBehaviour
     #endregion
 
     List<GridSpace> winList = new List<GridSpace>();
+
+    public bool CheckPlayer1Win()
+    {
+        bool win = false;
+        winList.Clear();
+        for (int i = 0; i < (int)LineCheck.Size; i++)
+        {
+            winList.Clear();
+            LineCheck check = (LineCheck)i;
+            CheckLine(gridSpacesPlayer1InGame, Player1Side, check, _winCount, winList);
+
+            if (winList.Count == _winCount)
+            {
+                win = true;
+            }
+            if (win)
+            {
+                for (int t = 0; t < winList.Count; t++)
+                {
+                    var obj = winList[t];
+                    obj.SetColor(Color.green);
+                }
+                return win;
+            }
+        }
+
+        return win;
+    }
+    public bool CheckPlayer2Win()
+    {
+        bool win = false;
+        winList.Clear();
+        for (int i = 0; i < (int)LineCheck.Size; i++)
+        {
+            winList.Clear();
+            LineCheck check = (LineCheck)i;
+            CheckLine(gridSpacesPlayer2InGame, Player2Side, check, _winCount, winList);
+            if (winList.Count == _winCount)
+            {
+                win = true;
+            }
+            if (win)
+            {
+                for (int t = 0; t < winList.Count; t++)
+                {
+                    var obj = winList[t];
+                    obj.SetColor(Color.green);
+                }
+                break;
+            }
+        }
+        return win;
+    }
     public void EndTurn()
     {
-        
+        bool player1Win = false;
+        bool player2Win = false;
+        bool isGameOver = false;
         if (with_ai)
         {
             if(GetPlayerSide() == Player2Side)
             {
                 AI_Turn();
+                player1Win = CheckPlayer1Win();
+                if (!player1Win)
+                {
+                    player2Win = CheckPlayer2Win();
+                }
             }
         }
-        bool player1Win = false;
-        bool player2Win = false;
-        bool isGameOver = false;
+
 
         
         if (!with_ai)
@@ -746,6 +732,7 @@ public class GameController : MonoBehaviour
             ChangePlayerSide();
         }
         //Check 5 line win
+        /*
         winList.Clear();
         for (int i = 0; i < (int)LineCheck.Size; i++)
         {
@@ -766,17 +753,22 @@ public class GameController : MonoBehaviour
                 }
                 break;
             }
-        }
+        }*/
 
         if (with_ai)
         {
             if (GetPlayerSide() == Player1Side)
             {
-                AI_Turn();
+                player1Win = CheckPlayer1Win();
+                if (!player1Win)
+                {
+                    player2Win = CheckPlayer2Win();
+                    AI_Turn();
+                }
             }
         }
 
-
+        /*
         if (!player1Win)
         {
             winList.Clear();
@@ -800,6 +792,7 @@ public class GameController : MonoBehaviour
                 }
             }
         }
+        */
         
 
         //===
