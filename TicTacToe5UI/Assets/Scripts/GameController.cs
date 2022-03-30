@@ -432,27 +432,24 @@ public class GameController : MonoBehaviour
 
                     if (check == LineCheck.DiagonalUp)
                     {
+                        GridSpace one = lineChecks[0].upLeftNeighbour;
+                        GridSpace two = lineChecks[lineChecks.Count - 1].downRightNeighbour;
                         for (int t = 0; t < lineChecks.Count; t++)
                         {
                             var obj = lineChecks[t];
                             obj.SetColor(Color.grey);
-
-
                         }
 
-                        if (lineChecks[0].upLeftNeighbour != null)
+
+
+
+                        //--
+                        if(two != null && one == null)
                         {
-                            if (lineChecks[0].upLeftNeighbour.buttonText.text == "")
+                            if (two.buttonText.text == "")
                             {
-                                AI_Click_And_End(lineChecks[0].upLeftNeighbour);
-                                lineChecks[0].upLeftNeighbour.SetColor(Color.cyan);
-                                return;
-                            }
-                            else
-                            if (lineChecks[lineChecks.Count - 1].downRightNeighbour.buttonText.text == "")
-                            {
-                                AI_Click_And_End(lineChecks[lineChecks.Count - 1].downRightNeighbour);
-                                lineChecks[lineChecks.Count - 1].downRightNeighbour.SetColor(Color.cyan);
+                                AI_Click_And_End(two);
+                                two.downRightNeighbour.SetColor(Color.cyan);
                                 return;
                             }
                             else
@@ -464,20 +461,13 @@ public class GameController : MonoBehaviour
                                 }
                             }
                         }
-                        
-                        if (lineChecks[lineChecks.Count - 1].downRightNeighbour != null)
+                        else
+                        if(one != null && two == null)
                         {
-                            if (lineChecks[lineChecks.Count - 1].downRightNeighbour.buttonText.text == "")
+                            if (one.buttonText.text == "")
                             {
-                                AI_Click_And_End(lineChecks[lineChecks.Count - 1].downRightNeighbour);
-                                lineChecks[lineChecks.Count - 1].downRightNeighbour.SetColor(Color.cyan);
-                                return;
-                            }
-                            else
-                            if (lineChecks[0].upLeftNeighbour.buttonText.text == "")
-                            {
-                                AI_Click_And_End(lineChecks[0].upLeftNeighbour);
-                                lineChecks[0].upLeftNeighbour.SetColor(Color.cyan);
+                                AI_Click_And_End(one);
+                                one.SetColor(Color.cyan);
                                 return;
                             }
                             else
@@ -487,6 +477,66 @@ public class GameController : MonoBehaviour
                                     var obj = lineChecks[t];
                                     obj.DiagonalUpBlock = true;
                                 }
+                            }
+                        }
+                        else
+                        if (one != null && two != null)
+                        {
+                            if (one.buttonText.text == "")
+                            {
+                                AI_Click_And_End(one);
+                                one.SetColor(Color.cyan);
+                                return;
+                            }
+                            else
+                            if (two.buttonText.text == "")
+                            {
+                                AI_Click_And_End(two);
+                                two.downRightNeighbour.SetColor(Color.cyan);
+                                return;
+                            }
+                            else
+                            {
+                                for (int t = 0; t < lineChecks.Count; t++)
+                                {
+                                    var obj = lineChecks[t];
+                                    obj.DiagonalUpBlock = true;
+                                }
+                            }
+                            if (two.buttonText.text == "")
+                            {
+                                AI_Click_And_End(two);
+                                two.downRightNeighbour.SetColor(Color.cyan);
+                                return;
+                            }
+                            else
+                            if (one.buttonText.text == "")
+                            {
+                                AI_Click_And_End(one);
+                                one.upLeftNeighbour.SetColor(Color.cyan);
+                                return;
+                            }
+                            else
+                            {
+                                for (int t = 0; t < lineChecks.Count; t++)
+                                {
+                                    var obj = lineChecks[t];
+                                    obj.DiagonalUpBlock = true;
+                                }
+                            }
+                        }
+                        else
+                        if(one == null && two == null)
+                        {
+                            for (int t = 0; t < lineChecks.Count; t++)
+                            {
+                                var obj = lineChecks[t];
+                                obj.DiagonalUpBlock = true;
+                            }
+                            for (int t = 0; t < lineChecks.Count; t++)
+                            {
+                                var obj = lineChecks[t];
+                                obj.SetColor(Color.black);
                             }
                         }
 
